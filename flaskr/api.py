@@ -1,16 +1,28 @@
 #!/usr/bin/python3
 
-from flask import Flask, json, request, abort
-from werkzeug.exceptions import BadRequest, Unauthorized, TooManyRequests 
+from flask import Flask, json, request, abort, jsonify
+from pymongo import MongoClient
+from werkzeug.exceptions import BadRequest
 import logging
 
 # TODO: implement logger
-# TODO: mongoDB
-
-keys = {"key": "fa4c8c97-a7a0-4c14-9876-6943ab50a87c"}
-devices = {"devices": 4}
 
 app = Flask(__name__)
+
+mongo_client = MongoClient('mongodb://localhost:27017')
+db = mongo_client.license
+keys = db.keys
+
+def getDevicesFromKey(key):
+    if keys.count_documents({}) > 0:
+        for document in keys.find():
+            if document['key'] == key:
+                return document['devices']
+                break
+        return None
+    else:
+        # TODO: error logging
+        return None
 
 @app.errorhandler(BadRequest)
 def handle_exception(e):
@@ -43,8 +55,12 @@ def post_validate():
     except KeyError:
         abort(400)
 
-    if key == keys['key']:
-        return devices
+    devices  = getDevicesFromKey(key) 
+    if devices is None:
+        # TODO: error logging
+        abort(500)
+    else:
+        return {"devices": devices} 
 
     # TODO: ratelimit
     abort(401) 
