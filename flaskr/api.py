@@ -13,11 +13,13 @@ mongo_client = MongoClient('mongodb://localhost:27017')
 db = mongo_client.license
 keys = db.keys
 
-def getDevicesFromKey(key):
+def getDataFromKey(key):
     if keys.count_documents({}) > 0:
         for document in keys.find():
             if document['key'] == key:
-                return document['devices']
+                devices = document['devices']
+                membership = document['membership']
+                return {'devices': devices, 'membership': membership}
                 break
         return None
     else:
@@ -35,6 +37,8 @@ def handle_exception(e):
         error = "INVALID_KEY"
     elif e.code == 429:
         error = "RATE_LIMIT"
+    elif e.code == 401:
+        error = "MAXIMUM_DEVICES"
 
     response.data = json.dumps({
         "error": error
@@ -55,12 +59,12 @@ def post_validate():
     except KeyError:
         abort(400)
 
-    devices  = getDevicesFromKey(key) 
-    if devices is None:
+    keyData = getDataFromKey(key) 
+    if keyData is None:
         # TODO: error logging
         abort(500)
     else:
-        return {"devices": devices} 
+        return keyData
 
     # TODO: ratelimit
     abort(401) 
