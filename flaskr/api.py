@@ -29,10 +29,6 @@ sentry_sdk.init(
 
 app = Flask(__name__)
 
-@app.route('/debug-sentry')
-def trigger_error():
-    division_by_zero = 1 / 0
-
 # TODO: implement logger
 
 def getDataFromKey(key):
@@ -55,7 +51,7 @@ class PaymentRequired(HTTPException):
 @app.errorhandler(HTTPException)
 def handle_exception(e):
     response = e.get_response()
-    error = ''
+    error = 'UNKNOWN'
     
     if e.code == 400:
         error = "MALFORMED_REQUEST"
@@ -63,8 +59,12 @@ def handle_exception(e):
         error = "INVALID_KEY"
     elif e.code == 402:
         error = "MAXIMUM_DEVICES"
+    elif e.code == 404:
+        error = "PAGE_NOT_FOUND"
     elif e.code == 429:
         error = "RATE_LIMIT"
+    elif e.code == 500:
+        error = "INTERNAL_SERVER_ERROR"
 
     response.data = json.dumps({
         "error": error
@@ -76,7 +76,9 @@ def handle_exception(e):
 app.register_error_handler(400, handle_exception)
 app.register_error_handler(401, handle_exception)
 app.register_error_handler(PaymentRequired, handle_exception)
+app.register_error_handler(400, handle_exception)
 app.register_error_handler(429, handle_exception)
+app.register_error_handler(500, handle_exception)
 
 @app.route('/validate', methods=['POST'])
 def post_validate():
@@ -86,24 +88,28 @@ def post_validate():
     except KeyError:
         abort(400)
 
+    # TOOD: ratelimit
+
     keyData = getDataFromKey(key) 
     if keyData is None:
         # TODO: error logging
-        abort(500)
+        abort(401)
     else:
         devices = keyData['devices']
         membership = keyData['membership']
 
-        if devices > 0:
+        if membership == 'BASIC' or membership == 'PREMIUM' or membership == 'ENTERPRISE':
             if membership == 'BASIC' and devices >= maximumBasicDevices:
+                # error logging
                 raise PaymentRequired() 
             elif membership == 'PREMIUM' and devices >= maximumPremiumDevices:
+                # error loggin
                 raise PaymentRequired() 
+        else:
+            # error logging
+            abort(500)
 
-        return keyData
-
-    # TODO: ratelimit
-    abort(401) 
+    return keyData
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
