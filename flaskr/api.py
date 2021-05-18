@@ -31,6 +31,12 @@ app = Flask(__name__)
 
 # TODO: implement logger
 
+def getDocumentFromKey(key):
+    for document in keys.find():
+        if document['key'] == key:
+            return document
+    return None
+
 def getDataFromKey(key):
     if keys.count_documents({}) > 0:
         for document in keys.find():
@@ -43,6 +49,14 @@ def getDataFromKey(key):
     else:
         # TODO: error logging
         return None
+
+def addDevice(key):
+    document = getDocumentFromKey(key) 
+    id = document['_id']
+    devices = int(document['devices'])
+    jsonId = {"_id": id}
+    updatedValues = {"$set": {"devices": devices + 1}}
+    keys.update_one(jsonId, updatedValues)
 
 class PaymentRequired(HTTPException):
     code = 402
@@ -109,6 +123,10 @@ def post_validate():
             # error logging
             abort(500)
 
+    # logging
+    addDevice(key)
+    # updates devices by 1 to include the current device
+    keyData['devices'] = keyData['devices'] + 1
     return keyData
 
 if __name__ == '__main__':
