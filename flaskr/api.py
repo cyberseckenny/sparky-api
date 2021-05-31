@@ -3,7 +3,7 @@
 import logging
 import configparser
 import sentry_sdk
-from flask import Flask, json, request, abort, jsonify
+from flask import Flask, json, request, abort, jsonify, render_template
 from pymongo import MongoClient
 from werkzeug.exceptions import HTTPException 
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -74,7 +74,7 @@ def handle_exception(e):
     elif e.code == 402:
         error = "MAXIMUM_DEVICES"
     elif e.code == 404:
-        error = "PAGE_NOT_FOUND"
+        return render_template('page_not_found.html', pikachu = 'pages/pikachu.gif') 
     elif e.code == 429:
         error = "RATE_LIMIT"
     elif e.code == 500:
