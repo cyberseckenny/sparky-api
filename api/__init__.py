@@ -16,6 +16,8 @@ maximumBasicDevices = int(devicesSection['BASIC'])
 maximumPremiumDevices = int(devicesSection['PREMIUM'])
 mongoSection = config['MONGO']
 mongoIP = mongoSection['IP']
+ratelimitSection = config['RATELIMIT']
+maxRequestsPerMinute = int(ratelimitSection['MAXPERMINUTE'])
 
 sentrySection = config['SENTRY']
 dsn = sentrySection['DSN']
@@ -67,7 +69,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["20 per minute"]
+    default_limits=[str(maxRequestsPerMinute) + " per minute"]
 )
 import api.validate_endpoint
 
