@@ -75,7 +75,6 @@ import api.validate_endpoint
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
-    print(e.code)
     response = e.get_response()
     error = 'UNKNOWN'
     
@@ -86,9 +85,11 @@ def handle_exception(e):
     elif e.code == 402:
         error = "MAXIMUM_DEVICES"
     elif e.code == 404:
-        return render_template('page_not_found.html') 
+        # return render_template('page_not_found.html') 
+        # taking this out b/c we aren't able to detect ratelimits for 404 pages. if someone ddoses a non-existsent url, all assets on the page will load as normal and the site will lag.
+        error = "PAGE_NOT_FOUND"
     elif e.code == 429:
-        error = "RATE_LIMIT"
+        return 'You are being rate limited.' 
     elif e.code == 500:
         error = "INTERNAL_SERVER_ERROR"
 
