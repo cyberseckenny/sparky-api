@@ -2,6 +2,8 @@ import logging
 import configparser
 import sentry_sdk
 from flask import Flask, json, request, abort, jsonify, render_template
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
 from werkzeug.exceptions import HTTPException 
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -26,7 +28,6 @@ sentry_sdk.init(
 mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
 db = mongo_client.license
 keys = db.keys
-
 
 # TODO: implement logger
 
@@ -63,6 +64,11 @@ class PaymentRequired(HTTPException):
 
 # we import other files down here to prevent circular imports
 app = Flask(__name__)
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["20 per minute"]
+)
 import api.validate_endpoint
 
 @app.errorhandler(HTTPException)
@@ -83,7 +89,7 @@ def handle_exception(e):
     elif e.code == 500:
         error = "INTERNAL_SERVER_ERROR"
 
-    respons.data = json.dumps({
+    response.data = json.dumps({
         "error": error
     })
     response.content_type = "application/json"
