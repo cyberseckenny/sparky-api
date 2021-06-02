@@ -17,7 +17,7 @@ maximumPremiumDevices = int(devicesSection['PREMIUM'])
 mongoSection = config['MONGO']
 mongoIP = mongoSection['IP']
 ratelimitSection = config['RATELIMIT']
-maxRequestsPerMinute = int(ratelimitSection['MAXPERMINUTE'])
+maxRequestsPerMinute = ratelimitSection['MAXPERMINUTE']
 
 sentrySection = config['SENTRY']
 dsn = sentrySection['DSN']
@@ -31,12 +31,11 @@ mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
 db = mongo_client.license
 keys = db.keys
 
-# TODO: implement logger
-
 def getDocumentFromKey(key):
     for document in keys.find():
         if document['key'] == key:
             return document
+    app.logger.info("Key not found")
     return None
 
 def getDataFromKey(key):
@@ -47,9 +46,10 @@ def getDataFromKey(key):
                 membership = document['membership']
                 return {'devices': devices, 'membership': membership}
                 break
+        app.logger.info("No data found from specified key")
         return None
     else:
-        # TODO: error logging
+        app.logger.info("No keys found in database")
         return None
 
 def addDevice(key):
@@ -69,12 +69,13 @@ app = Flask(__name__)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=[str(maxRequestsPerMinute) + " per minute"]
+    default_limits=[maxRequestsPerMinute + " per minute"]
 )
 import api.validate_endpoint
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
+    print(e.code)
     response = e.get_response()
     error = 'UNKNOWN'
     
