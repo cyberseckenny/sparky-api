@@ -1,11 +1,18 @@
 import logging
 import configparser
 from flask import request
-from api import app, config, getDataFromKey, addDevice
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from api import app, config, getDataFromKey, addDevice, maxRequestsPerMinute
 
 devicesSection = config['DEVICES']
 maximumBasicDevices = int(devicesSection['BASIC'])
 maximumPremiumDevices = int(devicesSection['PREMIUM'])
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=[maxRequestsPerMinute + " per minute"]
+)
 
 @app.route('/validate', methods=['POST'])
 def post_validate():
@@ -15,11 +22,8 @@ def post_validate():
     except KeyError:
         abort(400)
 
-    # TOOD: ratelimit
-
     keyData = getDataFromKey(key)
     if keyData is None:
-        # TODO: error logging
         abort(401)
     else:
         devices = keyData['devices']
@@ -27,13 +31,11 @@ def post_validate():
 
         if membership == 'BASIC' or membership == 'PREMIUM' or membership == 'ENTERPRISE':
             if membership == 'BASIC' and devices >= maximumBasicDevices:
-                # error logging
                 raise PaymentRequired()
             elif membership == 'PREMIUM' and devices >= maximumPremiumDevices:
-                # error loggin
                 raise PaymentRequired()
         else:
-            # error logging
+            app.logger.info("Key does not have a valid membership")
             abort(500)
 
     # logging
