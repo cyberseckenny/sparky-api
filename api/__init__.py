@@ -12,6 +12,8 @@ config.read('config.ini')
 devicesSection = config['DEVICES']
 maximumBasicDevices = int(devicesSection['BASIC'])
 maximumPremiumDevices = int(devicesSection['PREMIUM'])
+mongoSection = config['MONGO']
+mongoIP = mongoSection['IP']
 
 sentrySection = config['SENTRY']
 dsn = sentrySection['DSN']
@@ -21,13 +23,10 @@ sentry_sdk.init(
     traces_sample_rate=1.0
 )
 
-mongo_client = MongoClient('mongodb://localhost:27017')
+mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
 db = mongo_client.license
 keys = db.keys
 
-app = Flask(__name__)
-
-import api.validate_endpoint
 
 # TODO: implement logger
 
@@ -62,6 +61,10 @@ class PaymentRequired(HTTPException):
     code = 402
     description = 'Payment required.'
 
+# we import other files down here to prevent circular imports
+app = Flask(__name__)
+import api.validate_endpoint
+
 @app.errorhandler(HTTPException)
 def handle_exception(e):
     response = e.get_response()
@@ -74,18 +77,22 @@ def handle_exception(e):
     elif e.code == 402:
         error = "MAXIMUM_DEVICES"
     elif e.code == 404:
-        return render_template('page_not_found.html', pikachu = 'pages/pikachu.gif') 
+        return render_template('page_not_found.html') 
     elif e.code == 429:
         error = "RATE_LIMIT"
     elif e.code == 500:
         error = "INTERNAL_SERVER_ERROR"
 
-    response.data = json.dumps({
+    respons.data = json.dumps({
         "error": error
     })
     response.content_type = "application/json"
 
     return response
+
+@app.route('/')
+def post_root():
+    return render_template('root.html') 
 
 app.register_error_handler(400, handle_exception)
 app.register_error_handler(401, handle_exception)

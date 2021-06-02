@@ -1,6 +1,7 @@
 import logging
 import configparser
-from api import app, config
+from flask import request
+from api import app, config, getDataFromKey
 
 devicesSection = config['DEVICES']
 maximumBasicDevices = int(devicesSection['BASIC'])
