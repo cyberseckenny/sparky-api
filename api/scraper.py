@@ -18,7 +18,6 @@ async def check_proxy(authentication_ip, username, password):
             proxy = 'http://' + username + ':' + password + '@' + authentication_ip
             async with session.get('https://check-host.net/ip', proxy=proxy) as response:
                 ip = await(response.text())
-                print(ip)
                 return ip
     except Exception:
         return
