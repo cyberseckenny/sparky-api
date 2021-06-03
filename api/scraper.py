@@ -22,3 +22,10 @@ async def check_proxy(authentication_ip, username, password):
 # automatically rotate through valid proxies
 async def request():
     pass
+
+def main():
+    pass
+
+if __name__ == '__main__'
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
