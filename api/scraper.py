@@ -12,8 +12,7 @@ proxy_location = 'proxies'
 # returns the ip of a proxy; if 
 async def check_proxy(authentication_ip, username, password):
     try:
-        session_timeout = aiohttp.ClientTimeout(total=None, sock_connect=proxy_timeout,sock_read=timeout_seconds)
-        async with aiohttp.ClientSession(timeout=session_timeout) as session:
+        async with aiohttp.ClientSession() as session:
             proxy = 'http://' + username + ':' + password + '@' + authentication_ip
             async with session.get('https://check-host.net/ip', proxy=proxy) as response:
                 ip = await(response.text)
@@ -32,7 +31,7 @@ async def check_proxies():
         line = lines[i].strip()
         split = line.split(':')
 
-        authentication_ip = split[0] = ':' + split[1]
+        authentication_ip = split[0] + ':' + split[1]
         username = split[2]
         password = split[3]
         await check_proxy(authentication_ip, username, password)
