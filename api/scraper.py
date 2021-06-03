@@ -19,11 +19,13 @@ async def check_proxy(authentication_ip, username, password):
     except Exception:
         return
 
+
+    
 # automatically rotate through valid proxies
 async def request():
     pass
 
-def main():
+async def main():
     pass
 
 if __name__ == '__main__'
