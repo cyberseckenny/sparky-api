@@ -29,7 +29,7 @@ async def check_proxies():
     proxies.close()
 
     async def check(i):
-        line = line[i].strip()
+        line = lines[i].strip()
         split = line.split(':')
 
         authentication_ip = split[0] = ':' + split[1]
