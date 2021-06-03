@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import uvloop
 
 # TODO: before performing a complete scrape of NameMC, check the upcoming names to ensure that you have enough time to do it.
 #       otherwise, you may miss out on some names, b/c NameMC will update and your offsets will be incorrect
@@ -47,5 +48,6 @@ async def main():
     await check_proxies() 
 
 if __name__ == '__main__':
+    uvloop.install()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
