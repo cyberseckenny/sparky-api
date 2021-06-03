@@ -16,7 +16,7 @@ class Proxy:
         self.authentication_proxy = authentication_proxy
         self.ip = ip
 
-# returns the ip of a proxy; if 
+# returns the ip and authentication ip of a proxy; authentication ip is the ip used to login into the proxy 
 async def check_proxy(authentication_ip, username, password):
     try:
         client_timeout = aiohttp.ClientTimeout(total=proxy_timeout)
@@ -43,6 +43,7 @@ async def check_proxies():
         username = split[2]
         password = split[3]
         proxy = await check_proxy(authentication_ip, username, password)
+
         if proxy is not None:
             valid_proxies.append(Proxy(proxy[1], proxy[0]))
 
