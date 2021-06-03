@@ -22,7 +22,10 @@ async def check_proxy(authentication_ip, username, password):
 async def check_proxies():
     proxies = open('proxies', 'r')
     lines = proxies.readlines()
+    # gets amount of lines in proxies file
+    proxies_line_count = sum(1 for _ in proxies) 
     proxies.close()
+
     async def check(i):
         line = line[i].strip()
         split = line.split(':')
@@ -32,10 +35,8 @@ async def check_proxies():
         password = split[3]
         await check_proxy(authentication_ip, username, password)
 
-    proxies_line_count = 30000
     coroutines = [check(i) for i in range(proxies_line_count)
     await asyncio.gather(*coroutines)
-
     
 # automatically rotate through valid proxies
 async def request():
