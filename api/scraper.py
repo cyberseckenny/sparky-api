@@ -33,8 +33,8 @@ async def check_proxies():
     lines = proxies.readlines()
     proxies_line_count = len(lines) 
     proxies.close()
-    
     valid_proxies = []
+
     async def check(i):
         line = lines[i].strip()
         split = line.split(':')
@@ -43,13 +43,12 @@ async def check_proxies():
         username = split[2]
         password = split[3]
         proxy = await check_proxy(authentication_ip, username, password)
-
         if proxy is not None:
             valid_proxies.append(Proxy(proxy[1], proxy[0]))
 
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
-    
+
 # automatically rotate through valid proxies
 async def request():
     pass
