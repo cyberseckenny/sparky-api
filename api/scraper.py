@@ -10,6 +10,12 @@ proxy_timeout = 15
 # location of proxy file
 proxy_location = 'proxies'
 
+# stores a proxy ip as well as its credentials
+class Proxy:
+    def __init__(self, authentication_proxy, ip):
+        self.authentication_proxy = authentication_proxy
+        self.ip = ip
+
 # returns the ip of a proxy; if 
 async def check_proxy(authentication_ip, username, password):
     try:
@@ -18,16 +24,17 @@ async def check_proxy(authentication_ip, username, password):
             proxy = 'http://' + username + ':' + password + '@' + authentication_ip
             async with session.get('https://check-host.net/ip', proxy=proxy) as response:
                 ip = await(response.text())
-                return ip
+                return [ip, proxy]
     except Exception:
-        return
+        return None
 
 async def check_proxies():
     proxies = open(proxy_location, 'r')
     lines = proxies.readlines()
     proxies_line_count = len(lines) 
     proxies.close()
-
+    
+    valid_proxies = []
     async def check(i):
         line = lines[i].strip()
         split = line.split(':')
@@ -35,7 +42,9 @@ async def check_proxies():
         authentication_ip = split[0] + ':' + split[1]
         username = split[2]
         password = split[3]
-        await check_proxy(authentication_ip, username, password)
+        proxy = await check_proxy(authentication_ip, username, password)
+        if proxy is not None:
+            valid_proxies.append(Proxy(proxy[1], proxy[0]))
 
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
