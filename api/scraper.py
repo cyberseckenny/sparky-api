@@ -1,6 +1,9 @@
 import asyncio
 import aiohttp
 
+# TODO: before performing a complete scrape of NameMC, check the upcoming names to ensure that you have enough time to do it.
+#       otherwise, you may miss out on some names, b/c NameMC will update and your offsets will be incorrect
+
 # maximum amount of milliseconds a proxy is allowed to take to connect
 proxy_timeout = 5000
 
