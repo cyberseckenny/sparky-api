@@ -7,7 +7,7 @@ import aiohttp
 # maximum amount of milliseconds a proxy is allowed to take to connect
 proxy_timeout = 5000
 # location of proxy file
-proxy_location = './proxies'
+proxy_location = 'proxies'
 
 # returns the ip of a proxy; if 
 async def check_proxy(authentication_ip, username, password):
@@ -25,8 +25,7 @@ async def check_proxy(authentication_ip, username, password):
 async def check_proxies():
     proxies = open(proxy_location, 'r')
     lines = proxies.readlines()
-    # gets amount of lines in proxies file
-    proxies_line_count = sum(1 for _ in proxies) 
+    proxies_line_count = len(lines) 
     proxies.close()
 
     async def check(i):
