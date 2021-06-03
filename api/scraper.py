@@ -5,15 +5,16 @@ import uvloop
 # TODO: before performing a complete scrape of NameMC, check the upcoming names to ensure that you have enough time to do it.
 #       otherwise, you may miss out on some names, b/c NameMC will update and your offsets will be incorrect
 
-# maximum amount of milliseconds a proxy is allowed to take to connect
-proxy_timeout = 5000
+# maximum amount of seconds a proxy is allowed to take to connect
+proxy_timeout = 15
 # location of proxy file
 proxy_location = 'proxies'
 
 # returns the ip of a proxy; if 
 async def check_proxy(authentication_ip, username, password):
     try:
-        async with aiohttp.ClientSession() as session:
+        client_timeout = aiohttp.ClientTimeout(total=proxy_timeout)
+        async with aiohttp.ClientSession(timeout=client_timeout) as session:
             proxy = 'http://' + username + ':' + password + '@' + authentication_ip
             async with session.get('https://check-host.net/ip', proxy=proxy) as response:
                 ip = await(response.text())
