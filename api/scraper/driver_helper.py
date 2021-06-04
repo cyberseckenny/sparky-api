@@ -59,7 +59,7 @@ class Driver:
         );
         """ % (proxy_host, proxy_port, proxy_username, proxy_password)
    
-    def get_chromedriver():
+    def get_chromedriver(self):
         path = os.path.dirname(os.path.abspath(__file__))
         chrome_options = uc.ChromeOptions()
     
