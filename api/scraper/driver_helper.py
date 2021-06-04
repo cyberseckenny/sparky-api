@@ -9,7 +9,7 @@ class Driver:
         self.proxy_username = proxy_username
         self.proxy_password = proxy_password
 
-        manifest_json = """
+        self.manifest_json = """
         {
         "version": "1.0.0",
                 "manifest_version": 2,
@@ -30,7 +30,7 @@ class Driver:
         }
         """
 
-        background_js = """
+        self.background_js = """
         var config = {
             mode: "fixed_servers",
             rules: {
@@ -71,7 +71,7 @@ class Driver:
 
         # proxy stuff
         plugin_file = 'proxy_auth_plugin.zip'
-        with zipfile.ZipFile(pluginfile, 'w') as zip:
+        with zipfile.ZipFile(plugin_file, 'w') as zip:
             zip.writestr('manifest.json', self.manifest_json)
             zip.writestr('background.js', self.background_js)
         chrome_options.add_extension(plugin_file)    
