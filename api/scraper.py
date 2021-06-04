@@ -97,7 +97,7 @@ async def scrape_name_mc(proxies):
 
 async def main():
     proxies = await check_proxies() 
-    scrape_name_mc(proxies)
+    await scrape_name_mc(proxies)
     
 if __name__ == '__main__':
     uvloop.install()
