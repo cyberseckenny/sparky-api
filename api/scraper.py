@@ -48,7 +48,33 @@ async def check_proxies():
 
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
+    
+    for p in valid_proxies:
+        print(p.ip) 
+
+    print(' ')
+    # loops through all proxies and removes duplicate
+    for x in valid_proxies:
+        for y in valid_proxies:
+            if x == y: # important check to make sure we don't remove every proxy
+                continue
+            if x.ip == y.ip:
+                valid_proxies = remove_proxy(valid_proxies, y)
+
+    for p in valid_proxies:
+        print(p.ip) 
+
     return valid_proxies
+
+# removes a proxy from a proxy array and returns the modified version
+def remove_proxy(proxies, to_remove):
+    for i in range(0, len(proxies)):
+        proxy = proxies[i]
+        if proxy == to_remove:
+            proxies.pop(i)
+            break
+
+    return proxies
 
 # automatically rotate through valid proxies
 async def request():
