@@ -29,10 +29,10 @@ async def check_proxy(authentication_ip, username, password):
         return None
 
 async def check_proxies():
-    proxies = open(proxy_location, 'r')
-    lines = proxies.readlines()
+    proxies_file = open(proxy_location, 'r')
+    lines = proxies_file.readlines()
     proxies_line_count = len(lines) 
-    proxies.close()
+    proxies_file.close()
     valid_proxies = []
 
     async def check(i):
@@ -49,10 +49,6 @@ async def check_proxies():
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
     
-    for p in valid_proxies:
-        print(p.ip) 
-
-    print(' ')
     # loops through all proxies and removes duplicate
     for x in valid_proxies:
         for y in valid_proxies:
@@ -60,9 +56,6 @@ async def check_proxies():
                 continue
             if x.ip == y.ip:
                 valid_proxies = remove_proxy(valid_proxies, y)
-
-    for p in valid_proxies:
-        print(p.ip) 
 
     return valid_proxies
 
