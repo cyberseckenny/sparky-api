@@ -62,7 +62,6 @@ class Driver:
         """ % (proxy_host, proxy_port, proxy_username, proxy_password)
    
     def get_chromedriver(self):
-        path = os.path.dirname(os.path.abspath(__file__))
         chrome_options = uc.ChromeOptions()
     
         # executable and binary locations
@@ -77,7 +76,6 @@ class Driver:
         chrome_options.add_extension(plugin_file)    
 
         # TODO: don't hardcode this
-        driver = uc.Chrome(os.path.join(path, 'chromedriver'),
-                           chrome_options=chrome_options,
-                           exectuable_path='/home/kenny/Builds/chromedriver/src/chromedriver')
+        driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver',
+                           chrome_options=chrome_options)
         return driver
