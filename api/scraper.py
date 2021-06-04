@@ -69,15 +69,15 @@ def remove_proxy(proxies, to_remove):
 
     return proxies
 
-# automatically rotate through valid proxies
-async def post_request(proxies, url, post_data):
+# automatically rotate throughs valid proxies and does a get request
+async def get_request(proxies, url):
     proxy = proxies[0]
     popped_proxy = proxies.pop(0)    
     proxies.append(popped_proxy)
        
     try: 
-         async with aiohttp.ClientSession(timeout=client_timeout) as session:
-            async with session.post(url, data=post_data, proxy=proxy.authentication_ip) as response:
+         async with aiohttp.ClientSession() as session:
+            async with session.get(url, proxy=proxy.authentication_ip) as response:
                 text = await(response.text())
                 return text 
     except Exception:
@@ -85,13 +85,12 @@ async def post_request(proxies, url, post_data):
         return None
    
 async def scrape_name_mc(proxies):
-    coroutines = [post_request(proxies, 'test', {''}) for i in range(500)]
+    coroutines = [get_request(proxies, 'fakeurl') for i in range(500)]
     await asyncio.gather(*coroutines)
 
 async def main():
     proxies = await check_proxies() 
     scrape_name_mc(proxies)
-    
     
 if __name__ == '__main__':
     uvloop.install()
