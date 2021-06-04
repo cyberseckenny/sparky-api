@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import uvloop
+from bs4 import BeautifulSoup
 
 # TODO: before performing a complete scrape of NameMC, check the upcoming names to ensure that you have enough time to do it.
 #       otherwise, you may miss out on some names, b/c NameMC will update and your offsets will be incorrect
@@ -86,13 +87,19 @@ async def get_request(proxies, url):
          async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, proxy=proxy.authentication_proxy) as response:
                 text = await(response.text())
-                return text 
-    except Exception:
+                parsed_text = parse(text)
+                return parsed_text
+
+    except Exception as e:
         # TODO: implement checks here, we might need to know why are requests aren't sending
         return None
    
+# returns the soup (beautifulsoup) of an html response
+def parse(html):
+    return BeautifulSoup(html, 'html.parser')
+    
 async def scrape_name_mc(proxies):
-    coroutines = [get_request(proxies, 'fakeurl') for i in range(500)]
+    coroutines = [get_request(proxies, 'https://namemc.com') for i in range(0, len(proxies))]
     await asyncio.gather(*coroutines)
 
 async def main():
