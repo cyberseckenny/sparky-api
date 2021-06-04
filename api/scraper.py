@@ -70,7 +70,7 @@ def remove_proxy(proxies, to_remove):
     return proxies
 
 # automatically rotate through valid proxies
-async def request(proxies, url, post_data):
+async def post_request(proxies, url, post_data):
     proxy = proxies[0]
     popped_proxy = proxies.pop(0)    
     proxies.append(popped_proxy)
@@ -81,13 +81,14 @@ async def request(proxies, url, post_data):
                 text = await(response.text())
                 return text 
     except Exception:
+        # TODO: implement checks here, we might need to know why are requests aren't sending
         return None
    
 
 async def main():
     proxies = await check_proxies() 
     
-    coroutines = [request(proxies) for i in range(500)]
+    coroutines = [post_request(proxies, 'test', {''}) for i in range(500)]
     await asyncio.gather(*coroutines)
 
 if __name__ == '__main__':
