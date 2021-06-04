@@ -66,7 +66,7 @@ class Driver:
     
         # executable and binary locations
         # TODO: don't hardcode this
-        options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+        chrome_options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
 
         # proxy stuff
         plugin_file = 'proxy_auth_plugin.zip'
