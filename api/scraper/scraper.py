@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import uvloop
+import api.chromedriver
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
@@ -15,8 +16,12 @@ proxy_location = 'proxies'
 
 # stores a proxy ip as well as its credentials
 class Proxy:
-    def __init__(self, authentication_proxy, ip):
+    def __init__(self, authentication_proxy, proxy_host, proxy_port, proxy_username, proxy_password, ip):
         self.authentication_proxy = authentication_proxy
+        self.proxy_host = proxy_host
+        self.proxy_port = proxy_port
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
         self.ip = ip
 
 # returns the ip and authentication ip of a proxy; authentication ip is the ip used to login into the proxy 
@@ -47,7 +52,7 @@ async def check_proxies():
         password = split[3]
         proxy = await check_proxy(authentication_ip, username, password)
         if proxy is not None:
-            valid_proxies.append(Proxy(proxy[1], proxy[0]))
+            valid_proxies.append(Proxy(proxy[1], split[0], split[1], split[2], split[3], proxy[0]))
 
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
@@ -99,9 +104,7 @@ def temporary_get_request(proxies, url):
     popped_proxy = proxies.pop(0)
     proxies.append(popped_proxy)
     
-    options = Options()
-    options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'
-    options.add_argument('--proxy-server=%s' % proxy.authentication_proxy)
+     
     driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver', chrome_options=options)
 
     with driver:
