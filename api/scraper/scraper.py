@@ -1,7 +1,7 @@
 import asyncio
 import aiohttp
 import uvloop
-import api.chromedriver
+import chromedriver
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
