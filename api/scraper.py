@@ -70,10 +70,19 @@ def remove_proxy(proxies, to_remove):
     return proxies
 
 # automatically rotate through valid proxies
-async def request(proxies):
+async def request(proxies, url, post_data):
     proxy = proxies[0]
     popped_proxy = proxies.pop(0)    
     proxies.append(popped_proxy)
+       
+    try: 
+         async with aiohttp.ClientSession(timeout=client_timeout) as session:
+            async with session.post(url, data=post_data, proxy=proxy.authentication_ip) as response:
+                text = await(response.text())
+                return text 
+    except Exception:
+        return None
+   
 
 async def main():
     proxies = await check_proxies() 
