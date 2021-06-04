@@ -48,13 +48,14 @@ async def check_proxies():
 
     coroutines = [check(i) for i in range(proxies_line_count)]
     await asyncio.gather(*coroutines)
+    return valid_proxies
 
 # automatically rotate through valid proxies
 async def request():
-    pass
+    
 
 async def main():
-    await check_proxies() 
+    proxies = await check_proxies() 
 
 if __name__ == '__main__':
     uvloop.install()
