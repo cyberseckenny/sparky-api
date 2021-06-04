@@ -84,13 +84,15 @@ async def post_request(proxies, url, post_data):
         # TODO: implement checks here, we might need to know why are requests aren't sending
         return None
    
-
-async def main():
-    proxies = await check_proxies() 
-    
+async def scrape_name_mc(proxies):
     coroutines = [post_request(proxies, 'test', {''}) for i in range(500)]
     await asyncio.gather(*coroutines)
 
+async def main():
+    proxies = await check_proxies() 
+    scrape_name_mc(proxies)
+    
+    
 if __name__ == '__main__':
     uvloop.install()
     loop = asyncio.get_event_loop()
