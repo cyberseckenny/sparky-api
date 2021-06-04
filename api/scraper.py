@@ -1,7 +1,9 @@
 import asyncio
 import aiohttp
 import uvloop
+import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
+from selenium.webdriver.chrome.options import Options
 
 # TODO: before performing a complete scrape of NameMC, check the upcoming names to ensure that you have enough time to do it.
 #       otherwise, you may miss out on some names, b/c NameMC will update and your offsets will be incorrect
@@ -79,10 +81,8 @@ async def get_request(proxies, url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0', 
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                'Accept-Language': 'en-US,en;q=0.5',
-               'Accept-Encoding': 'gzip, deflate, br',
-               'DNT': '1',
-               'Connection': 'keep-alive'}
-
+               'Accept-Encoding': 'gzip, deflate, br'}
+               
     try: 
          async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, proxy=proxy.authentication_proxy) as response:
@@ -93,14 +93,31 @@ async def get_request(proxies, url):
     except Exception as e:
         # TODO: implement checks here, we might need to know why are requests aren't sending
         return None
+    
+def temporary_get_request(proxies, url):
+    proxy = proxies[0]
+    popped_proxy = proxies.pop(0)
+    proxies.append(popped_proxy)
+    
+    options = Options()
+    options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'
+    options.add_argument('--proxy-server=%s' % proxy.authentication_proxy)
+    driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver', chrome_options=options)
+
+    with driver:
+        driver.get(url)
+        print(driver.page_source) 
    
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
 async def scrape_name_mc(proxies):
-    coroutines = [get_request(proxies, 'https://namemc.com') for i in range(0, len(proxies))]
-    await asyncio.gather(*coroutines)
+    # coroutines = [get_request(proxies, 'https://namemc.com/names') for i in range(0, len(proxies))]
+    # temporary 
+    for i in range(10):
+        temporary_get_request(proxies, 'https://namemc.com/names')
+    # await asyncio.gather(*coroutines)
 
 async def main():
     proxies = await check_proxies() 
