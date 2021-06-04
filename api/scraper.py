@@ -84,7 +84,7 @@ async def get_request(proxies, url):
 
     try: 
          async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, proxy=proxy.authentication_ip) as response:
+            async with session.get(url, headers=headers, proxy=proxy.authentication_proxy) as response:
                 text = await(response.text())
                 return text 
     except Exception:
