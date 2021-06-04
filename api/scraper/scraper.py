@@ -1,7 +1,7 @@
 import asyncio
 import aiohttp
 import uvloop
-import chromedriver
+import driver_helper 
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
@@ -103,9 +103,9 @@ def temporary_get_request(proxies, url):
     proxy = proxies[0]
     popped_proxy = proxies.pop(0)
     proxies.append(popped_proxy)
-    
      
-    driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver', chrome_options=options)
+    chrome_driver = driver_helper.Driver(proxy.proxy_host, proxy.proxy_port, proxy.proxy_username, proxy.proxy_password)
+    driver = chrome_driver.get_chromedriver()
 
     with driver:
         driver.get(url)
@@ -118,7 +118,7 @@ def parse(html):
 async def scrape_name_mc(proxies):
     # coroutines = [get_request(proxies, 'https://namemc.com/names') for i in range(0, len(proxies))]
     # temporary 
-    for i in range(10):
+    for i in range(0, 10):
         temporary_get_request(proxies, 'https://namemc.com/names')
     # await asyncio.gather(*coroutines)
 
