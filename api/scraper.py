@@ -75,9 +75,16 @@ async def get_request(proxies, url):
     popped_proxy = proxies.pop(0)    
     proxies.append(popped_proxy)
        
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0', 
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+               'Accept-Language': 'en-US,en;q=0.5',
+               'Accept-Encoding': 'gzip, deflate, br',
+               'DNT': 1,
+               'Connection': 'keep-alive'}
+
     try: 
          async with aiohttp.ClientSession() as session:
-            async with session.get(url, proxy=proxy.authentication_ip) as response:
+            async with session.get(url, headers=headers, proxy=proxy.authentication_ip) as response:
                 text = await(response.text())
                 return text 
     except Exception:
