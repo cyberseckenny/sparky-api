@@ -1,12 +1,10 @@
 import undetected_chromedriver as uc
 
-
-
 class Driver:
-    def __init__(proxy_host, proxy_port, proxy_user, proxy_password):
+    def __init__(proxy_host, proxy_port, proxy_username, proxy_password):
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
-        self.proxy_user = proxy_user
+        self.proxy_username = proxy_username
         self.proxy_password = proxy_password
 
         manifest_json = """
@@ -59,7 +57,7 @@ class Driver:
             {urls: ["<all_urls>"]},
             ['blocking']
         );
-        """ % (proxy_host, proxy_port, proxy_user, proxy_password)
+        """ % (proxy_host, proxy_port, proxy_username, proxy_password)
    
     def get_chromedriver():
         path = os.path.dirname(os.path.abspath(__file__))
