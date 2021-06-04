@@ -119,7 +119,7 @@ async def scrape_name_mc(proxies):
     # coroutines = [get_request(proxies, 'https://namemc.com/names') for i in range(0, len(proxies))]
     # temporary 
     for i in range(0, 10):
-        temporary_get_request(proxies, 'https://namemc.com/names')
+        temporary_get_request(proxies, 'https://namemc.com/minecraft-names')
     # await asyncio.gather(*coroutines)
 
 async def main():
