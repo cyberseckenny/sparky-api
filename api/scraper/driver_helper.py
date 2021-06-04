@@ -1,5 +1,6 @@
 import undetected_chromedriver as uc
 import os
+import zipfile
 
 class Driver:
     def __init__(self, proxy_host, proxy_port, proxy_username, proxy_password):
