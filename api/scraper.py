@@ -52,7 +52,7 @@ async def check_proxies():
 
 # automatically rotate through valid proxies
 async def request():
-    
+    pass    
 
 async def main():
     proxies = await check_proxies() 
