@@ -68,8 +68,8 @@ class Driver:
         # proxy stuff
         plugin_file = 'proxy_auth_plugin.zip'
         with zipfile.ZipFile(pluginfile, 'w') as zip:
-            zip.writestr('manifest.json', manifest_json)
-            zip.writestr('background.js', background_js)
+            zip.writestr('manifest.json', self.manifest_json)
+            zip.writestr('background.js', self.background_js)
         chrome_options.add_extension(plugin_file)    
 
         driver = uc.Chrome(os.path.join(path, 'chromedriver'),
