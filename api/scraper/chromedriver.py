@@ -73,7 +73,7 @@ class Driver:
         chrome_options.add_extension(plugin_file)    
 
         driver = uc.Chrome(os.path.join(path, 'chromedriver'),
-                           chrome_options=chrome_optinos)
+                           chrome_options=chrome_options)
         return driver
 
     
