@@ -78,28 +78,7 @@ def remove_proxy(proxies, to_remove):
     return proxies
 
 # automatically rotate throughs valid proxies and does a get request
-async def get_request(proxies, url):
-    proxy = proxies[0]
-    popped_proxy = proxies.pop(0)    
-    proxies.append(popped_proxy)
-       
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0', 
-               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-               'Accept-Language': 'en-US,en;q=0.5',
-               'Accept-Encoding': 'gzip, deflate, br'}
-               
-    try: 
-         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, proxy=proxy.authentication_proxy) as response:
-                text = await(response.text())
-                parsed_text = parse(text)
-                return parsed_text
-
-    except Exception as e:
-        # TODO: implement checks here, we might need to know why are requests aren't sending
-        return None
-    
-def temporary_get_request(proxies, url):
+def get_request(proxies, url):
     proxy = proxies[0]
     popped_proxy = proxies.pop(0)
     proxies.append(popped_proxy)
@@ -109,22 +88,20 @@ def temporary_get_request(proxies, url):
 
     with driver:
         driver.get(url)
-        print(driver.page_source) 
+        parsed_text = parse(driver.page_source)
+        return parsed_text
    
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
-async def scrape_name_mc(proxies):
-    # coroutines = [get_request(proxies, 'https://namemc.com/names') for i in range(0, len(proxies))]
-    # temporary 
-    for i in range(0, 10):
-        temporary_get_request(proxies, 'https://namemc.com/minecraft-names')
-    # await asyncio.gather(*coroutines)
+def scrape_name_mc(proxies):
+    for i in range(0, len(proxies)):
+        get_request(proxies, 'https://namemc.com/minecraft-names')
 
 async def main():
     proxies = await check_proxies() 
-    await scrape_name_mc(proxies)
+    scrape_name_mc(proxies)
     
 if __name__ == '__main__':
     uvloop.install()
