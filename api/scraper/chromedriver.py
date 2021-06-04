@@ -65,6 +65,10 @@ class Driver:
         path = os.path.dirname(os.path.abspath(__file__))
         chrome_options = uc.ChromeOptions()
     
+        # executable and binary locations
+        # TODO: don't hardcode this
+        options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+
         # proxy stuff
         plugin_file = 'proxy_auth_plugin.zip'
         with zipfile.ZipFile(pluginfile, 'w') as zip:
@@ -72,9 +76,8 @@ class Driver:
             zip.writestr('background.js', self.background_js)
         chrome_options.add_extension(plugin_file)    
 
+        # TODO: don't hardcode this
         driver = uc.Chrome(os.path.join(path, 'chromedriver'),
-                           chrome_options=chrome_options)
+                           chrome_options=chrome_options,
+                           exectuable_path='/home/kenny/Builds/chromedriver/src/chromedriver')
         return driver
-
-    
-    
