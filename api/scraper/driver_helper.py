@@ -75,6 +75,13 @@ class Driver:
             zip.writestr('background.js', self.background_js)
         chrome_options.add_extension(plugin_file)    
 
+        prefs = {'profile.managed_default_content_settings.images': 2,
+                 'profile.managed_default_content_settings.javascript': 2,
+                 'profile.managed_default_content_settings.stylesheet': 2,
+                 'profile.managed_default_content_settings.css': 2}
+        chrome_options.add_experimental_option('prefs', prefs)
+        
+
         # TODO: don't hardcode this
         driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver',
                            chrome_options=chrome_options)
