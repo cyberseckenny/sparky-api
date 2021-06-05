@@ -107,8 +107,13 @@ def scrape_name_mc(proxies):
             player_name = name.find('a').text
             drop_time = name.find('time')['datetime']
             unix_drop_time = parse_time(drop_time)
+            searches = name.find('div', class_ = 'col-auto col-lg order-lg-3 text-right tabular').text
+            # set the searches to 0 if it's not a number, most likely a '-'
+            if not searches.isnumeric():
+                searches = 0 
+            searches = int(searches)
                 
-            json_data = {'username': player_name, 'dropTime': unix_drop_time}  
+            json_data = {'username': player_name, 'searches': searches, 'dropTime': unix_drop_time}  
             print(json_data)
             
 # converts datetime into unix time
