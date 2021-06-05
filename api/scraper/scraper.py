@@ -97,11 +97,22 @@ def parse(html):
     
 def scrape_name_mc(proxies):
     for i in range(0, len(proxies)):
-        get_request(proxies, 'https://namemc.com/minecraft-names')
+        soup = get_request(proxies, 'https://namemc.com/minecraft-names')
+        name_containers = soup.find_all('div', class_ = 'row no-gutters py-1 px-3')
+        print(name_containers[0])
+        
 
 async def main():
+    print('Checking for valid proxies...')
     proxies = await check_proxies() 
-    scrape_name_mc(proxies)
+    proxies_len = len(proxies)
+    
+    print('Found ' + str(proxies_len) + ' valid proxies')
+    if (proxies_len > 0): 
+        print('Scraping NameMC...')
+        scrape_name_mc(proxies)
+    else:
+        return
     
 if __name__ == '__main__':
     uvloop.install()
