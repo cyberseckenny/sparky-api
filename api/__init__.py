@@ -34,33 +34,22 @@ limiter = Limiter(
     default_limits=[maxRequestsPerMinute + " per minute"]
 )
 
-@app.errorhandler(HTTPException)
-def handle_exception(e):
-    response = e.get_response()
-    error = 'UNKNOWN'
-    
-    if e.code == 400:
-        error = "MALFORMED_REQUEST"
-    elif e.code == 404:
-        return render_template('page_not_found.html') 
-        error = "PAGE_NOT_FOUND"
-    elif e.code == 429:
-        return 'You are being rate limited.' 
-    elif e.code == 500:
-        error = "INTERNAL_SERVER_ERROR"
+@app.errorhandler(400)
+def malformed_request(e):
+    return {'MALFORMED_REQUEST'}
 
-    response.data = json.dumps({
-        "error": error
-    })
-    response.content_type = "application/json"
+@app.errorhandler(429)
+def rate_limit(e):
+    return 'You are being rate limited.'
 
-    return response
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('page_not_found.html')
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return 'INTERNAL_SERVER_ERROR'
 
 @app.route('/')
 def post_root():
     return render_template('root.html') 
-
-app.register_error_handler(400, handle_exception)
-app.register_error_handler(404, handle_exception)
-app.register_error_handler(429, handle_exception)
-app.register_error_handler(500, handle_exception)
