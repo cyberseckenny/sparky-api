@@ -38,8 +38,9 @@ limiter = Limiter(
 def rate_limit(e):
     return 'You are being rate limited.'
 
-@app.errorhandler(404)
-def page_not_found(e):
+# acts a 'missing handler', or a fallback route if none of the others work
+@app.route('/<path:path>')
+def page_not_found(path):
     return render_template('page_not_found.html')
 
 @app.errorhandler(500)
