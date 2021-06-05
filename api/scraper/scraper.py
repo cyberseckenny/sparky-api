@@ -1,16 +1,17 @@
 import asyncio
 import aiohttp
 import uvloop
-import driver_helper 
 import undetected_chromedriver as uc
 import re
+import os
+import zipfile
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 
 # uses chrome driver to scrape the elements of a page 
 def get_request(url):
-    driver = driver_helper.get_chromedriver()
+    driver = get_chromedriver()
 
     with driver:
         driver.get(url)
@@ -46,6 +47,34 @@ def parse_time(drop_time):
     unix_time = int(time.replace(tzinfo=timezone.utc).timestamp())
     return unix_time
 
+def get_chromedriver():
+    chrome_options = uc.ChromeOptions()
+    
+    # executable and binary locations
+    # TODO: don't hardcode this
+    chrome_options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+
+    # proxy stuff
+    # plugin_file = 'proxy_auth_plugin.zip'
+    # with zipfile.ZipFile(plugin_file, 'w') as zip:
+    #     zip.writestr('manifest.json', self.manifest_json)
+    #     zip.writestr('background.js', self.background_js)
+    # chrome_options.add_extension(plugin_file)    
+    
+    chrome_options.headless = True
+    chrome_options.add_argument('--headless')
+
+    prefs = {'profile.managed_default_content_settings.images': 2,
+             'profile.managed_default_content_settings.javascript': 2,
+             'profile.managed_default_content_settings.stylesheet': 2,
+             'profile.managed_default_content_settings.css': 2}
+    chrome_options.add_experimental_option('prefs', prefs)
+
+    # TODO: don't hardcode this
+    driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver',
+                       chrome_options=chrome_options)
+    return driver
+            
 async def main():
     print('Scraping NameMC...')
     scrape_name_mc()
