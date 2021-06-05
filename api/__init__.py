@@ -41,7 +41,6 @@ def handle_exception(e):
     
     if e.code == 400:
         error = "MALFORMED_REQUEST"
-        error = "MAXIMUM_DEVICES"
     elif e.code == 404:
         return render_template('page_not_found.html') 
         error = "PAGE_NOT_FOUND"
