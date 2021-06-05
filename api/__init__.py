@@ -50,3 +50,7 @@ def internal_server_error(e):
 @app.route('/')
 def site_root():
     return render_template('root.html') 
+
+@app.route('/docs')
+def site_docs():
+    return render_template('docs.html')
