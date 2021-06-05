@@ -9,6 +9,9 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 
+chrome_binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+chrome_executable_path='/home/kenny/Builds/chromedriver/src/chromedriver'
+
 # uses chrome driver to scrape the elements of a page 
 def get_request(url):
     driver = get_chromedriver()
@@ -50,9 +53,8 @@ def parse_time(drop_time):
 def get_chromedriver():
     chrome_options = uc.ChromeOptions()
     
-    # executable and binary locations
-    # TODO: don't hardcode this
-    chrome_options.binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+    # binary locations
+    chrome_options.binary_location = chrome_binary_location 
     chrome_options.headless = True
     chrome_options.add_argument('--headless')
 
@@ -62,8 +64,8 @@ def get_chromedriver():
              'profile.managed_default_content_settings.css': 2}
     chrome_options.add_experimental_option('prefs', prefs)
 
-    # TODO: don't hardcode this
-    driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver',
+    # binary location
+    driver = uc.Chrome(executable_path=chrome_executable_path,
                        chrome_options=chrome_options)
     return driver
             
