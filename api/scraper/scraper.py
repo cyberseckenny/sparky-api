@@ -124,8 +124,10 @@ def parse_time(drop_time):
 
 async def main():
     print('Checking for valid proxies...')
-    proxies = await check_proxies() 
-    proxies_len = len(proxies)
+    # proxies = await check_proxies() 
+    # proxies_len = len(proxies)
+    proxies_len = 5
+    proxies = [Proxy('lol', 'xd', 'im', 'fake', '1', '2')]
     
     print('Found ' + str(proxies_len) + ' valid proxies')
     if (proxies_len > 0): 
