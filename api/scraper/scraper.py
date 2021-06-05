@@ -4,6 +4,7 @@ import uvloop
 import driver_helper 
 import undetected_chromedriver as uc
 import re
+from datetime import datetime
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 
@@ -102,6 +103,19 @@ def scrape_name_mc(proxies):
     for i in range(0, 1):
         soup = get_request(proxies, 'https://namemc.com/minecraft-names')
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
+        for name in name_containers:    
+            player_name = name.find('a').text
+            drop_time = name.find('time')['datetime']
+            unix_drop_time = parse_time(drop_time)
+                
+            json_data = {'username': player_name, 'dropTime': unix_drop_time}  
+            print(json_data)
+            
+# converts datetime into unix time
+def parse_time(drop_time):
+    time = datetime.strptime(drop_time, '%Y-%m-%dT%H:%M:%S.%fZ') 
+    unix_time = int(time.timestamp())
+    return unix_time
 
 async def main():
     print('Checking for valid proxies...')
