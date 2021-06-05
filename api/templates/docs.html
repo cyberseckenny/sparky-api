@@ -1,5 +1,56 @@
 <!doctype html>
+<head>
+  <style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    pre {
+        border: 1px solid rgba(0.1, 0.1, 0.1, .1);
+        background-color: #FAFAFA;
+        font-size: 15px;
+        padding: 8px;
+    }
+
+    code {
+        border: 1px solid rgba(0.1, 0.1, 0.1, .1);
+        background-color: #FAFAFA;
+        font-size: 14px;
+        padding: 1px;
+    }
+
+    p {
+        font-size: 15px;
+    }
+  </style>
+</head>
 <body>
-  <p>Sparky API Documentation</p>
-  <a href="https://discord.gg/bFT2rkC2D7">Discord</a>
+  <h2>Upcoming Names</h2>
+  <hr></hr> 
+  <pre>GET https://names.sparky.rip/upcoming?three_letter=&lttrue/false&gt</pre>
+  <p>Returns the <code>50</code> next upcoming names. Each name will be returned along with it's <code>searches</code>, it's <code>unixDropTime</code>, and it's <code>utcDropTime</code>.</p>
+  <p>If <code>three_letter</code> is set to <code>true</code> only three letter names will be returned.</p>
+  <h3>Response</h3>
+  <pre>[
+    {
+        "name": "FailedAnonymous",
+        "searches": "0",
+        "unixDropTime": "1622932366",
+        "utcDropTime": "2021-06-05T22:32:46.000Z"
+    },
+    {
+        "name": "Rev1lo_",
+        "searches": "0",
+        "unixDropTime": "1622932367",
+        "utcDropTime": "2021-06-05T22:32:47.000Z"
+    },
+    {
+        "name": "IDKaIGN",
+        "searches": "1",
+        "unixDropTime": "1622932374",
+        "utcDropTime": "2021-06-05T22:32:54.000Z"
+    }
+    ...
+]</pre>
 </body>
+
