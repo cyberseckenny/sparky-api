@@ -80,7 +80,9 @@ class Driver:
                  'profile.managed_default_content_settings.stylesheet': 2,
                  'profile.managed_default_content_settings.css': 2}
         chrome_options.add_experimental_option('prefs', prefs)
-        
+
+        # headless
+        chrome_options.add_argument('--headless')        
 
         # TODO: don't hardcode this
         driver = uc.Chrome(executable_path='/home/kenny/Builds/chromedriver/src/chromedriver',

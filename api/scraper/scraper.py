@@ -91,17 +91,17 @@ def get_request(proxies, url):
         driver.get(url)
         parsed_text = parse(driver.page_source)
         return parsed_text
+    
+    driver.quit()
    
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
 def scrape_name_mc(proxies):
-    for i in range(0, len(proxies)):
+    for i in range(0, 1):
         soup = get_request(proxies, 'https://namemc.com/minecraft-names')
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
-        print(name_containers[0])
-        print(name_containers[1])
 
 async def main():
     print('Checking for valid proxies...')
