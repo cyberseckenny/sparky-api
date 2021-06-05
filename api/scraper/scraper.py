@@ -4,7 +4,7 @@ import uvloop
 import driver_helper 
 import undetected_chromedriver as uc
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 
@@ -114,7 +114,7 @@ def scrape_name_mc(proxies):
 # converts datetime into unix time
 def parse_time(drop_time):
     time = datetime.strptime(drop_time, '%Y-%m-%dT%H:%M:%S.%fZ') 
-    unix_time = int(time.timestamp())
+    unix_time = int(time.replace(tzinfo=timezone.utc).timestamp())
     return unix_time
 
 async def main():
