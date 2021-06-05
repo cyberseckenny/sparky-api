@@ -34,10 +34,6 @@ limiter = Limiter(
     default_limits=[maxRequestsPerMinute + " per minute"]
 )
 
-@app.errorhandler(400)
-def malformed_request(e):
-    return {'MALFORMED_REQUEST'}
-
 @app.errorhandler(429)
 def rate_limit(e):
     return 'You are being rate limited.'
