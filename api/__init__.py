@@ -48,5 +48,5 @@ def internal_server_error(e):
     return 'INTERNAL_SERVER_ERROR'
 
 @app.route('/')
-def post_root():
+def site_root():
     return render_template('root.html') 
