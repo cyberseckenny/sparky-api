@@ -43,8 +43,7 @@ def handle_exception(e):
         error = "MALFORMED_REQUEST"
         error = "MAXIMUM_DEVICES"
     elif e.code == 404:
-        # return render_template('page_not_found.html') 
-        # taking this out b/c we aren't able to detect ratelimits for 404 pages. if someone ddoses a non-existsent url, all assets on the page will load as normal and the site will lag.
+        return render_template('page_not_found.html') 
         error = "PAGE_NOT_FOUND"
     elif e.code == 429:
         return 'You are being rate limited.' 
