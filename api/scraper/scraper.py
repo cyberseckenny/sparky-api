@@ -3,6 +3,7 @@ import aiohttp
 import uvloop
 import driver_helper 
 import undetected_chromedriver as uc
+import re
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 
@@ -98,9 +99,9 @@ def parse(html):
 def scrape_name_mc(proxies):
     for i in range(0, len(proxies)):
         soup = get_request(proxies, 'https://namemc.com/minecraft-names')
-        name_containers = soup.find_all('div', class_ = 'row no-gutters py-1 px-3')
+        name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
         print(name_containers[0])
-        
+        print(name_containers[1])
 
 async def main():
     print('Checking for valid proxies...')
