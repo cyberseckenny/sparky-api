@@ -1,31 +1,20 @@
 import asyncio
 import uvloop
+import socket
 import re
 import os
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
-chrome_binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
-chrome_executable_path='/home/kenny/Builds/chromedriver/src/chromedriver'
+def socket_get_request():
 
-# uses chrome driver to scrape the elements of a page 
-def get_request(url):
-    driver = get_chromedriver()
-
-    with driver:
-        driver.get(url)
-        parsed_text = parse(driver.page_source)
-        return parsed_text
-    
-    driver.quit()
-   
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
 def scrape_name_mc():
     for i in range(0, 1000):
-        soup = get_request('https://namemc.com/minecraft-names')
+        soup = None
         name_containers = soup.find_all('div', class_ =ere.compile('^row no-gutters py-1 px-3'))
         for name in name_containers:    
             player_name = name.find('a').text
@@ -46,25 +35,6 @@ def parse_time(drop_time):
     unix_time = int(time.replace(tzinfo=timezone.utc).timestamp())
     return unix_time
 
-def get_chromedriver():
-    chrome_options = uc.ChromeOptions()
-    
-    # binary locations
-    chrome_options.binary_location = chrome_binary_location 
-    chrome_options.headless = True
-    chrome_options.add_argument('--headless')
-
-    prefs = {'profile.managed_default_content_settings.images': 2,
-             'profile.managed_default_content_settings.javascript': 2,
-             'profile.managed_default_content_settings.stylesheet': 2,
-             'profile.managed_default_content_settings.css': 2}
-    chrome_options.add_experimental_option('prefs', prefs)
-
-    # binary location
-    driver = uc.Chrome(executable_path=chrome_executable_path,
-                       chrome_options=chrome_options)
-    return driver
-            
 async def main():
     print('Scraping NameMC...')
     scrape_name_mc()
