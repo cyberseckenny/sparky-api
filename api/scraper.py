@@ -3,18 +3,29 @@ import uvloop
 import socket
 import re
 import os
+import ssl
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 def socket_get_request():
-    request = b'GET / HTTP/1.1\nHost: www.namemc.com/minecraft-names\n\n'
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('namemc.com', 80))
-    s.send(request)
-    result = str(s.recv(4096), 'utf-8')
-    s.close()
 
-    print(result)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    context = ssl.create_default_context()
+    sock = context.wrap_socket(sock, server_hostname='namemc.com')
+    sock.connect(('namemc.com', 443))
+
+    request = '\r\n'.join(('GET /minecraft-names HTTP/1.1',
+                'Host: namemc.com',
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+                '\r\n'))
+    sock.send(request.encode())
+
+    while True:
+        new = sock.recv(4096)
+        if not new:
+            sock.close()
+            break
+        print(new)
 
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
