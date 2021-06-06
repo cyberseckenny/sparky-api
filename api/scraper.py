@@ -4,6 +4,7 @@ import socket
 import re
 import os
 import ssl
+from user_agent import generate_user_agent
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
@@ -14,12 +15,13 @@ def socket_get_request():
     sock = context.wrap_socket(sock, server_hostname='namemc.com')
     sock.connect(('namemc.com', 443))
 
+    user_agent = generate_user_agent()
     request = '\r\n'.join(('GET /minecraft-names HTTP/1.1',
                 'Host: namemc.com',
-                'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+                user_agent,
                 '\r\n'))
-    sock.send(request.encode())
 
+    sock.send(request.encode())
     while True:
         new = sock.recv(4096)
         if not new:
@@ -27,6 +29,9 @@ def socket_get_request():
             break
         print(new)
 
+    print(request)
+    
+    
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
