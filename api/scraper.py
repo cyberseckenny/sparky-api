@@ -1,5 +1,3 @@
-import asyncio
-import aiohttp
 import uvloop
 import undetected_chromedriver as uc
 import re
@@ -84,11 +82,6 @@ def get_chromedriver():
                        chrome_options=chrome_options)
     return driver
             
-async def main():
+async def start():
     print('Scraping NameMC...')
     scrape_name_mc()
-    
-if __name__ == '__main__':
-    uvloop.install()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
