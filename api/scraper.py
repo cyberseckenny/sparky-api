@@ -7,6 +7,14 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 def socket_get_request():
+    request = b'GET / HTTP/1.1\nHost: www.namemc.com/minecraft-names\n\n'
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('namemc.com', 80))
+    s.send(request)
+    result = str(s.recv(4096), 'utf-8')
+    s.close()
+
+    print(result)
 
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
@@ -37,6 +45,8 @@ def parse_time(drop_time):
 
 async def main():
     print('Scraping NameMC...')
+    socket_get_request()
+    return
     scrape_name_mc()
     
 if __name__ == '__main__':
