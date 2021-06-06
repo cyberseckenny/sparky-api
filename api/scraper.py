@@ -28,9 +28,10 @@ def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
 def scrape_name_mc():
-    for i in range(0, 1000):
-        soup = get_request('https://namemc.com/minecraft-names')
+    def scrape(url):
+        soup = get_request(url)
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
+        json_data_array = []
         for name in name_containers:    
             player_name = name.find('a').text
             drop_time = name.find('time')['datetime']
@@ -43,7 +44,20 @@ def scrape_name_mc():
             searches = int(searches)
                 
             json_data = {'username': player_name, 'searches': searches, 'unixdropTime': unix_drop_time, 'utcDropTime': utc_drop_time}  
-            print(json_data)
+            json_data_array.append(json_data)
+
+        return json_data_array
+
+    i = 0
+    while True:
+        if i == 0:
+            scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
+        elif i == 20: # checks for three letter names after every 20 scrapes 
+            i = 0
+            continue 
+        else:
+            scrape('https://namemc.com/minecraft-names')
+        i = i + 1
             
 # converts datetime into unix time
 def parse_time(drop_time):
