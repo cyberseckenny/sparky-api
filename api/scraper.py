@@ -1,13 +1,9 @@
 import asyncio
-import aiohttp
 import uvloop
-import undetected_chromedriver as uc
 import re
 import os
-import zipfile
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
 
 chrome_binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
 chrome_executable_path='/home/kenny/Builds/chromedriver/src/chromedriver'
@@ -30,7 +26,7 @@ def parse(html):
 def scrape_name_mc():
     for i in range(0, 1000):
         soup = get_request('https://namemc.com/minecraft-names')
-        name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
+        name_containers = soup.find_all('div', class_ =ere.compile('^row no-gutters py-1 px-3'))
         for name in name_containers:    
             player_name = name.find('a').text
             drop_time = name.find('time')['datetime']
