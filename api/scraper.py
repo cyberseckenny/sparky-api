@@ -82,6 +82,6 @@ def get_chromedriver():
                        chrome_options=chrome_options)
     return driver
             
-async def start():
+def start():
     print('Scraping NameMC...')
     scrape_name_mc()
