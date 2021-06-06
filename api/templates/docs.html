@@ -28,7 +28,7 @@
   <h2>Upcoming Names</h2>
   <hr></hr> 
   <pre>GET https://names.sparky.rip/upcoming?three_letter=&lttrue/false&gt</pre>
-  <p>Returns the <code>50</code> next upcoming names. Each name will be returned along with it's <code>searches</code>, it's <code>unixDropTime</code>, and it's <code>utcDropTime</code>.</p>
+  <p>Returns the <code>50</code> next upcoming names. Each <code>name</code> will be returned along with it's <code>searches</code> (pulled from NameMC), it's <code>unixDropTime</code>, and it's <code>utcDropTime</code>.</p>
   <p>If <code>three_letter</code> is set to <code>true</code> only three letter names will be returned.</p>
   <h3>Response</h3>
   <pre>[
@@ -52,5 +52,20 @@
     }
     ...
 ]</pre>
+  <h2>Name Droptime</h2>
+  <hr></hr>
+  <pre>GET https://names.sparky.rip/droptime/&ltname&gt</pre>
+  <p>Returns the droptime of a specific name. Included with the specified <code>name</code> will be <code>unixDropTime</code> and <code>utcDropTime</code>.</p>
+  <h3>Response</h3>
+  <pre>{
+    "name": "657",
+    "unixDropTime": "1623236193",
+    "utcDropTime": "2021-06-09T10:56:33.000Z"
+}</pre>
+  <h3>Error Response</h3>
+  If the droptime of the specified name cannot be found, the following error will be returned:
+  <pre>{
+    "error": "INVALID_NAME"
+}</pre>
 </body>
 
