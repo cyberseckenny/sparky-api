@@ -5,6 +5,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
 from sentry_sdk.integrations.flask import FlaskIntegration
+from bson import json_util
+from datetime import datetime
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -22,7 +24,24 @@ sentry_sdk.init(
 )
 
 mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
+db = mongo_client.upcoming_names
+upcoming = db.upcoming
+upcoming_three = db.upcoming_three
 
+# the 'three' boolean indicates if the json_data is three letter names
+def addUpcomingNames(json_data, three):
+    data = json_util.loads(json_data)
+    now = datetime.now()
+    if three:
+        upcoming_three.drop()
+        upcoming_three.insert_many(data)
+        print('Updated upcoming three letter names at ' + str(now))
+    else:
+        upcoming.drop()
+        upcoming.insert_many(data)
+        print('Updated upcoming names at ' + str(now))
+
+    
 app = Flask(__name__)
 limiter = Limiter(
     app,

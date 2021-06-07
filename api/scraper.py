@@ -2,6 +2,8 @@ import re
 import undetected_chromedriver as uc
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+from __init__ import addUpcomingNames
+import json
 
 chrome_binary_location = '/home/kenny/builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
 chrome_executable_path='/home/kenny/builds/chromedriver/src/chromedriver'
@@ -37,20 +39,22 @@ def scrape_name_mc():
                 searches = 0 
             searches = int(searches)
                 
-            json_data = {'username': player_name, 'searches': searches, 'unixdropTime': unix_drop_time, 'utcDropTime': utc_drop_time}  
+            json_data = {"username": player_name, "searches": searches, "unixdropTime": unix_drop_time, "utcDropTime": utc_drop_time}  
             json_data_array.append(json_data)
 
-        return json_data_array
+        return json.dumps(json_data_array)
 
     i = 0
     while True:
         if i == 0:
-            scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
+            json_data = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
+            addUpcomingNames(json_data, True)
         elif i == 20: # checks for three letter names after every 20 scrapes 
             i = 0
             continue 
         else:
-            scrape('https://namemc.com/minecraft-names')
+            json_data = scrape('https://namemc.com/minecraft-names')
+            addUpcomingNames(json_data, False)
         i = i + 1
             
 # converts datetime into unix time
