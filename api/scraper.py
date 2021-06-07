@@ -1,6 +1,7 @@
 import re
 import os
 import zipfile
+import undetected_chromedriver as uc
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
@@ -16,7 +17,6 @@ def get_request(url):
         parsed_text = parse(driver.page_source)
         driver.quit()
         return parsed_text
-    
     
    
 # returns the soup (beautifulsoup) of an html response
