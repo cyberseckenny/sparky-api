@@ -32,9 +32,8 @@ def scrape_name_droptime(name):
 
     containers = soup.find_all('div', class_ = re.compile('^col-sm-6 my-1'))
     if len(containers) == 4:
-        print(soup.find('div'))
-        utc_drop_time = soup.find('div', {'id':'availability-time'})['datetime']
-        print(utc_drop_time)
+        time = soup.find('time', class_ = 'text-nowrap')
+        utc_drop_time = time['datetime']
         unix_drop_time = parse_time(utc_drop_time)
         json_data = {"name": name, "unixDropTime": unix_drop_time, "utcDropTime": utc_drop_time}
     else:
