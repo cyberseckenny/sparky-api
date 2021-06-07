@@ -78,6 +78,9 @@ def get_chromedriver():
                        chrome_options=chrome_options)
     return driver
             
-def start():
+def main():
     print('Scraping NameMC...')
     scrape_name_mc()
+
+if __name__ == '__main__':
+    main()
