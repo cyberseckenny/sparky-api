@@ -1,6 +1,7 @@
 import configparser
 import sentry_sdk
-from flask import Flask, render_template
+import json
+from flask import Flask, render_template, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
@@ -41,7 +42,19 @@ def addUpcomingNames(json_data, three):
         upcoming.insert_many(data)
         print('Updated upcoming names at ' + str(now))
 
-    
+# the 'three' boolean indicates if the json_data is three letter names
+def getUpcomingNames(three):
+    if three:
+        cursor = upcoming_three.find({}, {'_id': False})
+    else:
+        cursor = upcoming.find({}, {'_id': False})
+        
+    json_data = [] 
+    for doc in cursor:
+       json_data.append(doc)
+
+    return json_data 
+
 app = Flask(__name__)
 limiter = Limiter(
     app,
@@ -69,3 +82,7 @@ def site_root():
 @app.route('/docs')
 def site_docs():
     return render_template('docs.html')
+
+@app.route('/upcoming')
+def endpoint_upcoming():
+    return jsonify(getUpcomingNames(False))
