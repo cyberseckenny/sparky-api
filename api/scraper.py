@@ -1,12 +1,17 @@
 import re
 import undetected_chromedriver as uc
+import configparser
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from __init__ import addUpcomingNames
 import json
 
-chrome_binary_location = '/home/kenny/builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
-chrome_executable_path='/home/kenny/builds/chromedriver/src/chromedriver'
+config = configparser.ConfigParser()
+config.read('config.ini')
+chrome_section = config['CHROME']
+
+CHROME_BINARY_LOCATION = chrome_section['CHROME_BINARY_LOCATION']
+CHROME_EXECUTABLE_LOCATION = chrome_section['CHROME_EXECUTABLE_LOCATION']
 
 # uses chrome driver to scrape the elements of a page 
 def get_request(url):
@@ -18,7 +23,6 @@ def get_request(url):
         driver.quit()
         return parsed_text
     
-   
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
@@ -67,7 +71,7 @@ def get_chromedriver():
     chrome_options = uc.ChromeOptions()
     
     # binary locations
-    chrome_options.binary_location = chrome_binary_location 
+    chrome_options.binary_location = CHROME_BINARY_LOCATION 
     chrome_options.headless = True
     chrome_options.add_argument('--headless')
 
@@ -78,7 +82,7 @@ def get_chromedriver():
     chrome_options.add_experimental_option('prefs', prefs)
 
     # binary location
-    driver = uc.Chrome(executable_path=chrome_executable_path,
+    driver = uc.Chrome(executable_path=CHROME_EXECUTABLE_LOCATION,
                        chrome_options=chrome_options)
     return driver
             
