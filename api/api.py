@@ -63,6 +63,7 @@ limiter = Limiter(
     default_limits=[MAX_REQUESTS_PER_MINUTE + " per minute"]
 )
 # import here to prevent circular imports
+import scraper
 
 @app.errorhandler(429)
 def rate_limit(e):
@@ -93,8 +94,13 @@ def endpoint_upcoming():
     else:
         return jsonify(getUpcomingNames(False))
 
-@app.route('/droptime')
-def endpoint_droptime():
-    name = request.args.get('name')
-    return jsonify(scrape_name_droptime(name))
+@app.route('/droptime/<name>')
+def endpoint_droptime(name):
+    print(name)
+    if name == ' ':
+        return jsonify({"error": "INVALID_NAME"})
+    else:
+        json_data = scraper.scrape_name_droptime(name)
+        return jsonify(json_data)
+    
 

@@ -3,6 +3,7 @@ import undetected_chromedriver as uc
 import configparser
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+from api import addUpcomingNames
 import json
 
 config = configparser.ConfigParser()
