@@ -39,7 +39,7 @@ def scrape_name_mc():
                 searches = 0 
             searches = int(searches)
                 
-            json_data = {"username": player_name, "searches": searches, "unixdropTime": unix_drop_time, "utcDropTime": utc_drop_time}  
+            json_data = {"name": player_name, "searches": searches, "unixDropTime": unix_drop_time, "utcDropTime": utc_drop_time}  
             json_data_array.append(json_data)
 
         return json.dumps(json_data_array)
