@@ -23,7 +23,6 @@ sentry_sdk.init(
 
 mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
 
-# we import other files down here to prevent circular imports
 app = Flask(__name__)
 limiter = Limiter(
     app,
