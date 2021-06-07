@@ -12,9 +12,10 @@ from datetime import datetime
 config = configparser.ConfigParser()
 config.read('config.ini')
 mongoSection = config['MONGO']
-mongoIP = mongoSection['IP']
+MONGO_IP = mongoSection['IP']
+
 ratelimitSection = config['RATELIMIT']
-maxRequestsPerMinute = ratelimitSection['MAXPERMINUTE']
+MAX_REQUESTS_PER_MINUTE = ratelimitSection['MAXPERMINUTE']
 
 sentrySection = config['SENTRY']
 dsn = sentrySection['DSN']
@@ -24,30 +25,30 @@ sentry_sdk.init(
     traces_sample_rate=1.0
 )
 
-mongo_client = MongoClient('mongodb://' + mongoIP + ':27017')
+mongo_client = MongoClient('mongodb://' + MONGO_IP + ':27017')
 db = mongo_client.upcoming_names
-upcoming = db.upcoming
-upcoming_three = db.upcoming_three
+UPCOMING = db.upcoming
+UPCOMING_THREE = db.upcoming_three
 
 # the 'three' boolean indicates if the json_data is three letter names
 def addUpcomingNames(json_data, three):
     data = json_util.loads(json_data)
     now = datetime.now()
     if three:
-        upcoming_three.drop()
-        upcoming_three.insert_many(data)
+        UPCOMING_THREE.drop()
+        UPCOMING_THREE.insert_many(data)
         print('Updated upcoming three letter names at ' + str(now))
     else:
-        upcoming.drop()
-        upcoming.insert_many(data)
+        UPCOMING.drop()
+        UPCOMING.insert_many(data)
         print('Updated upcoming names at ' + str(now))
 
 # the 'three' boolean indicates if the json_data is three letter names
 def getUpcomingNames(three):
     if three:
-        cursor = upcoming_three.find({}, {'_id': False})
+        cursor = UPCOMING_THREE.find({}, {'_id': False})
     else:
-        cursor = upcoming.find({}, {'_id': False})
+        cursor = UPCOMING.find({}, {'_id': False})
         
     json_data = [] 
     for doc in cursor:
@@ -59,7 +60,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=[maxRequestsPerMinute + " per minute"]
+    default_limits=[MAX_REQUESTS_PER_MINUTE + " per minute"]
 )
 
 @app.errorhandler(429)
