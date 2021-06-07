@@ -3,7 +3,6 @@ import undetected_chromedriver as uc
 import configparser
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
-from __init__ import addUpcomingNames
 import json
 
 config = configparser.ConfigParser()
@@ -27,6 +26,22 @@ def get_request(url):
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
+def scrape_name_droptime(name):
+    url = 'https://namemc.com/search?q=' + name
+    soup = get_request(url)
+
+    containers = soup.find_all('div', class_ = re.compile('^col-sm-6 my-1'))
+    if len(containers) == 4:
+        print(soup.find('div'))
+        utc_drop_time = soup.find('div', {'id':'availability-time'})['datetime']
+        print(utc_drop_time)
+        unix_drop_time = parse_time(utc_drop_time)
+        json_data = {"name": name, "unixDropTime": unix_drop_time, "utcDropTime": utc_drop_time}
+    else:
+        json_data = {"error": "INVALID_NAME"}
+
+    return json_data
+
 def scrape_name_mc():
     def scrape(url):
         soup = get_request(url)
