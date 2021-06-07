@@ -1,27 +1,22 @@
 import re
-import undetected_chromedriver as uc
-import configparser
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from api import addUpcomingNames
 import json
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-chrome_section = config['CHROME']
-
-CHROME_BINARY_LOCATION = chrome_section['CHROME_BINARY_LOCATION']
-CHROME_EXECUTABLE_LOCATION = chrome_section['CHROME_EXECUTABLE_LOCATION']
+import cloudscraper
+import time
 
 # uses chrome driver to scrape the elements of a page 
 def get_request(url):
-    driver = get_chromedriver()
-
-    with driver:
-        driver.get(url)
-        parsed_text = parse(driver.page_source)
-        driver.quit()
-        return parsed_text
+    scraper = cloudscraper.create_scraper(
+        browser={
+            'browser': 'firefox',
+            'platform': 'windows',
+            'mobile': False
+        }
+    )
+    text = scraper.get(url).text
+    return parse(text)
     
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
@@ -44,6 +39,7 @@ def scrape_name_droptime(name):
 
 def scrape_name_mc():
     def scrape(url):
+        time.sleep(3)
         soup = get_request(url)
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
         json_data_array = []
@@ -82,25 +78,6 @@ def parse_time(drop_time):
     unix_time = int(time.replace(tzinfo=timezone.utc).timestamp())
     return unix_time
 
-def get_chromedriver():
-    chrome_options = uc.ChromeOptions()
-    
-    # binary locations
-    chrome_options.binary_location = CHROME_BINARY_LOCATION 
-    chrome_options.headless = True
-    chrome_options.add_argument('--headless')
-
-    prefs = {'profile.managed_default_content_settings.images': 2,
-             'profile.managed_default_content_settings.javascript': 2,
-             'profile.managed_default_content_settings.stylesheet': 2,
-             'profile.managed_default_content_settings.css': 2}
-    chrome_options.add_experimental_option('prefs', prefs)
-
-    # binary location
-    driver = uc.Chrome(executable_path=CHROME_EXECUTABLE_LOCATION,
-                       chrome_options=chrome_options)
-    return driver
-            
 def main():
     print('Scraping NameMC...')
     scrape_name_mc()
