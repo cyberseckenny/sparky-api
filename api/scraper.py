@@ -3,8 +3,8 @@ import undetected_chromedriver as uc
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
-chrome_binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
-chrome_executable_path='/home/kenny/Builds/chromedriver/src/chromedriver'
+chrome_binary_location = '/home/kenny/builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
+chrome_executable_path='/home/kenny/builds/chromedriver/src/chromedriver'
 
 # uses chrome driver to scrape the elements of a page 
 def get_request(url):
