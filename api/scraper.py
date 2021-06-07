@@ -14,9 +14,10 @@ def get_request(url):
     with driver:
         driver.get(url)
         parsed_text = parse(driver.page_source)
+        driver.quit()
         return parsed_text
     
-    driver.quit()
+    
    
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
