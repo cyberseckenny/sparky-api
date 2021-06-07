@@ -62,6 +62,7 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=[MAX_REQUESTS_PER_MINUTE + " per minute"]
 )
+# import here to prevent circular imports
 
 @app.errorhandler(429)
 def rate_limit(e):
@@ -91,4 +92,9 @@ def endpoint_upcoming():
         return jsonify(getUpcomingNames(True))
     else:
         return jsonify(getUpcomingNames(False))
+
+@app.route('/droptime')
+def endpoint_droptime():
+    name = request.args.get('name')
+    return jsonify(scrape_name_droptime(name))
 
