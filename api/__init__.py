@@ -1,7 +1,7 @@
 import configparser
 import sentry_sdk
 import json
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
@@ -85,4 +85,9 @@ def site_docs():
 
 @app.route('/upcoming')
 def endpoint_upcoming():
-    return jsonify(getUpcomingNames(False))
+    three = request.args.get('three_letter')
+    if three == 'true':
+        return jsonify(getUpcomingNames(True))
+    else:
+        return jsonify(getUpcomingNames(False))
+
