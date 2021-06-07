@@ -1,13 +1,10 @@
-import logging
 import configparser
 import sentry_sdk
-from flask import Flask, json, request, abort, jsonify, render_template
+from flask import Flask, render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
-from werkzeug.exceptions import HTTPException 
 from sentry_sdk.integrations.flask import FlaskIntegration
-from setuptools import setup
 
 config = configparser.ConfigParser()
 config.read('config.ini')

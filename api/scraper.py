@@ -1,6 +1,4 @@
 import re
-import os
-import zipfile
 import undetected_chromedriver as uc
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
