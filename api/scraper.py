@@ -1,11 +1,8 @@
-import uvloop
-import undetected_chromedriver as uc
 import re
 import os
 import zipfile
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
 
 chrome_binary_location = '/home/kenny/Builds/google-chrome/pkg/google-chrome/usr/bin/google-chrome-stable'        
 chrome_executable_path='/home/kenny/Builds/chromedriver/src/chromedriver'
