@@ -53,7 +53,7 @@ def get_request(url):
     response = SCRAPER.get(url, stream=True, headers=SCRAPER_HEADERS)
 
     SCRAPER_COUNT = SCRAPER_COUNT + 1
-    return parse(response.text)
+    return [parse(response.text), SCRAPER_COUNT]
 
  
 # returns the soup (beautifulsoup) of an html response
@@ -81,7 +81,7 @@ def scrape_name_droptime(name):
 def scrape_name_mc():
     def scrape(url):
         time.sleep(REQUEST_DISTANCE)
-        soup = get_request(url)
+        soup, scraper_count = get_request(url)
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
         json_data_array = []
         for name in name_containers:    
@@ -98,19 +98,19 @@ def scrape_name_mc():
             json_data = {"name": player_name, "searches": searches, "unixDropTime": unix_drop_time, "utcDropTime": utc_drop_time}  
             json_data_array.append(json_data)
 
-        return json.dumps(json_data_array)
+        return [json.dumps(json_data_array), scraper_count]
 
     i = 0
     while True:
         if i == 0:
-            json_data = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
-            addUpcomingNames(json_data, True, i)
+            json_data, scraper_count = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
+            addUpcomingNames(json_data, True, scraper_count)
         elif i == 10: # when to check for 3 letter names again 
             i = 0
             continue 
         else:
-            json_data = scrape('https://namemc.com/minecraft-names')
-            addUpcomingNames(json_data, False, i)
+            json_data, scraper_count = scrape('https://namemc.com/minecraft-names')
+            addUpcomingNames(json_data, False, scraper_count)
         i = i + 1
             
 # converts datetime into unix time
