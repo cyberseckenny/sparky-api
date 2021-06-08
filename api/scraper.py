@@ -5,26 +5,67 @@ from api import addUpcomingNames
 import json
 import cloudscraper
 import time
+from datetime import datetime
 
-# uses chrome driver to scrape the elements of a page 
+SCRAPER = cloudscraper.create_scraper() 
+SCRAPER_COUNT = 0
+SCRAPER_HEADERS = {}
+SCRAPER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
+REQUEST_DISTANCE = 3
+REQUESTS_BEFORE_NEW_SESSION_ID = 200 
+
+# cloud scraper used here to scrape the page
 def get_request(url):
-    scraper = cloudscraper.create_scraper(
-        browser={
-            'browser': 'firefox',
-            'platform': 'windows',
-            'mobile': False
-        }
-    )
-    text = scraper.get(url).text
-    return parse(text)
-    
+    global SCRAPER
+    global SCRAPER_COUNT
+    global SCRAPER_HEADERS
+
+    if SCRAPER_COUNT == REQUESTS_BEFORE_NEW_SESSION_ID:
+        SCRAPER = cloudscraper.create_scraper()
+        SCRAPER_COUNT = 0
+     
+    response = None
+    if SCRAPER_COUNT == 0:
+        headers = {'User-Agent': SCRAPER_USER_AGENT}
+        response = SCRAPER.get(url, stream=True, headers=headers)
+        time.sleep(REQUEST_DISTANCE)
+
+        # we don't continue until cloudflare lets us through
+        while True:
+            now = datetime.now()
+            if (response.headers['Connection'] == 'close'):
+                print('New session creation failed. Trying again momentarily... ' + str(now))
+            else:
+                print('Succesfully created new session.')
+                break
+            time.sleep(REQUEST_DISTANCE)
+            SCRAPER = cloudscraper.create_scraper()
+            response = SCRAPER.get(url, stream=True, headers=headers)
+
+        SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
+                           'Referer': 'https://namemc.com',
+                           'Alt-Used': 'namemc.com',
+                           'Connection': 'keep-alive',
+                           'Upgrade-Insecure-Requests': '1',
+                           'Sec-GPC': '1',
+                           'TE': 'Trailers'}
+        
+    response = SCRAPER.get(url, stream=True, headers=SCRAPER_HEADERS)
+
+    SCRAPER_COUNT = SCRAPER_COUNT + 1
+    return parse(response.text)
+
+ 
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
     
 def scrape_name_droptime(name):
     url = 'https://namemc.com/search?q=' + name
-    soup = get_request(url)
+
+    scraper = cloudscraper.create_scraper()
+    text = scraper.get(url).text
+    soup = parse(text)
 
     containers = soup.find_all('div', class_ = re.compile('^col-sm-6 my-1'))
     if len(containers) == 4:
@@ -39,7 +80,7 @@ def scrape_name_droptime(name):
 
 def scrape_name_mc():
     def scrape(url):
-        time.sleep(3)
+        time.sleep(REQUEST_DISTANCE)
         soup = get_request(url)
         name_containers = soup.find_all('div', class_ = re.compile('^row no-gutters py-1 px-3'))
         json_data_array = []
@@ -63,13 +104,13 @@ def scrape_name_mc():
     while True:
         if i == 0:
             json_data = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
-            addUpcomingNames(json_data, True)
-        elif i == 20: # checks for three letter names after every 20 scrapes 
+            addUpcomingNames(json_data, True, i)
+        elif i == 10: # when to check for 3 letter names again 
             i = 0
             continue 
         else:
             json_data = scrape('https://namemc.com/minecraft-names')
-            addUpcomingNames(json_data, False)
+            addUpcomingNames(json_data, False, i)
         i = i + 1
             
 # converts datetime into unix time

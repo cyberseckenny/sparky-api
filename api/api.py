@@ -31,17 +31,17 @@ UPCOMING = db.upcoming
 UPCOMING_THREE = db.upcoming_three
 
 # the 'three' boolean indicates if the json_data is three letter names
-def addUpcomingNames(json_data, three):
+def addUpcomingNames(json_data, three, i):
     data = json_util.loads(json_data)
     now = datetime.now()
     if three:
         UPCOMING_THREE.drop()
         UPCOMING_THREE.insert_many(data)
-        print('Updated upcoming three letter names at ' + str(now))
+        print('[' + str(i) + '] ' + 'Updated upcoming three letter names at ' + str(now))
     else:
         UPCOMING.drop()
         UPCOMING.insert_many(data)
-        print('Updated upcoming names at ' + str(now))
+        print('[' + str(i) + '] ' + 'Updated upcoming names at ' + str(now))
 
 # the 'three' boolean indicates if the json_data is three letter names
 def getUpcomingNames(three):
