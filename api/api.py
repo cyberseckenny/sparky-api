@@ -37,11 +37,11 @@ def addUpcomingNames(json_data, three, i):
     if three:
         UPCOMING_THREE.drop()
         UPCOMING_THREE.insert_many(data)
-        print('[' + str(i + 1) + '] ' + 'Updated upcoming three letter names at ' + str(now))
+        print('[' + str(i) + '] ' + 'Updated upcoming three letter names at ' + str(now))
     else:
         UPCOMING.drop()
         UPCOMING.insert_many(data)
-        print('[' + str(i + 1) + '] ' + 'Updated upcoming names at ' + str(now))
+        print('[' + str(i) + '] ' + 'Updated upcoming names at ' + str(now))
 
 # the 'three' boolean indicates if the json_data is three letter names
 def getUpcomingNames(three):
