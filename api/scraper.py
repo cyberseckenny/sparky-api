@@ -35,7 +35,7 @@ def get_request(url):
     # if cloudflare denies our request, we keep on trying for a new session id until they don't
     response = SCRAPER.get(url, headers=SCRAPER_HEADERS)
     if response.headers['Connection'] == 'close':
-         get_new_headers(url)
+         response = get_new_headers(url)
 
     SCRAPER_COUNT = SCRAPER_COUNT + 1
     return [parse(response.text), SCRAPER_COUNT]
@@ -44,19 +44,16 @@ def get_new_headers(url):
     global SCRAPER
     global SCRAPER_COUNT
     global SCRAPER_HEADERS
-    # we will keep increasing this, giving cloudflare more time to let us in
-    scaling_request_distance = REQUEST_DISTANCE
 
     # we don't stop trying for new headers until cloudflare lets us through
     while True:
         now = datetime.now()
         SCRAPER_USER_AGENT = USER_AGENT_ROTATOR.get_random_user_agent() 
         headers = {'User-Agent': SCRAPER_USER_AGENT}
-        SCRAPER = cloudscraper.create_scraper()
+        SCRAPER = cloudscraper.create_scraper(debug=True)
         response = SCRAPER.get(url, stream=True, headers=headers)
-        print('User-Agent: ' + SCRAPER_USER_AGENT)
         if (response.headers['Connection'] == 'close'):
-            print('New session creation failed. Trying again momentarily... ' + str(now))
+            print('Session creation failed. Trying again momentarily... ' + str(now))
         else:
             print('Succesfully created new session.')
             break
@@ -70,8 +67,10 @@ def get_new_headers(url):
                        'Sec-GPC': '1',
                        'TE': 'Trailers'}
 
+    time.sleep(REQUEST_DISTANCE)
     SCRAPER_COUNT = 0
- 
+    return SCRAPER.get(url, headers=SCRAPER_HEADERS)
+     
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
     return BeautifulSoup(html, 'html.parser')
