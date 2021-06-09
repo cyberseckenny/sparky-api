@@ -120,12 +120,18 @@ def scrape_name_mc():
     while True:
         if i == 0:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
+            # json data was empty so we just try to scrape again
+            if json_data is None:
+                break
             addUpcomingNames(json_data, True, scraper_count)
         elif i == 10: # when to check for 3 letter names again 
             i = 0
             continue 
         else:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names')
+            # json data was empty so we just try to scrape again
+            if json_data is None:
+                break
             addUpcomingNames(json_data, False, scraper_count)
         i = i + 1
             
