@@ -47,6 +47,8 @@ def get_new_headers(url):
 
     # we don't stop trying for new headers until cloudflare lets us through
     while True:
+        time.sleep(REQUEST_DISTANCE)
+
         now = datetime.now()
         SCRAPER_USER_AGENT = USER_AGENT_ROTATOR.get_random_user_agent() 
         headers = {'User-Agent': SCRAPER_USER_AGENT}
@@ -57,8 +59,7 @@ def get_new_headers(url):
         else:
             print('Succesfully created new session.')
             break
-        time.sleep(REQUEST_DISTANCE)
-
+        
     SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
                        'Referer': 'https://namemc.com',
                        'Alt-Used': 'namemc.com',
