@@ -6,11 +6,16 @@ import json
 import cloudscraper
 import time
 from datetime import datetime
+from random_user_agent.user_agent import UserAgent
+from random_user_agent.params import SoftwareName, OperatingSystem
 
 SCRAPER = cloudscraper.create_scraper() 
 SCRAPER_COUNT = 0
 SCRAPER_HEADERS = {}
-SCRAPER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
+SCRAPER_USER_AGENT = None
+
+USER_AGENT_ROTATOR = UserAgent()
+
 REQUEST_DISTANCE = 3
 
 # cloud scraper used here to scrape the page
@@ -44,17 +49,17 @@ def get_new_headers(url):
     # we don't stop trying for new headers until cloudflare lets us through
     while True:
         now = datetime.now()
+        SCRAPER_USER_AGENT = USER_AGENT_ROTATOR.get_random_user_agent() 
         headers = {'User-Agent': SCRAPER_USER_AGENT}
         SCRAPER = cloudscraper.create_scraper()
         response = SCRAPER.get(url, stream=True, headers=headers)
-        time.sleep(REQUEST_DISTANCE)
+        print('User-Agent: ' + SCRAPER_USER_AGENT)
         if (response.headers['Connection'] == 'close'):
             print('New session creation failed. Trying again momentarily... ' + str(now))
         else:
             print('Succesfully created new session.')
             break
-        scaling_request_distance = scaling_request_distance * 1.2
-        time.sleep(scaling_request_distance)
+        time.sleep(REQUEST_DISTANCE)
 
     SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
                        'Referer': 'https://namemc.com',
