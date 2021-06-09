@@ -33,13 +33,9 @@ def get_request(url):
         get_new_headers(url)
 
     # if cloudflare denies our request, we keep on trying for a new session id until they don't
-    while True:
-        response = SCRAPER.get(url, headers=SCRAPER_HEADERS)
-        time.sleep(REQUEST_DISTANCE)
-        if response.headers['Connection'] == 'close':
-            get_new_headers(url)
-        else:
-            break
+    response = SCRAPER.get(url, headers=SCRAPER_HEADERS)
+    if response.headers['Connection'] == 'close':
+         get_new_headers(url)
 
     SCRAPER_COUNT = SCRAPER_COUNT + 1
     return [parse(response.text), SCRAPER_COUNT]
