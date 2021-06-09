@@ -121,7 +121,9 @@ def scrape_name_mc():
         if i == 0:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
             # json data was empty so we just try to scrape again
-            if len(json_data) == 0:
+            if json_data == []:
+                print('Scraper returned an empty list, trying to scrape again...')
+                time.sleep(REQUEST_DISTANCE)
                 continue 
             addUpcomingNames(json_data, True, scraper_count)
         elif i == 10: # when to check for 3 letter names again 
@@ -130,8 +132,10 @@ def scrape_name_mc():
         else:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names')
             # json data was empty so we just try to scrape again
-            if len(json_data) == 0:
-                continue 
+            if json_data == []:
+                print('Scraper returned an empty list, trying to scrape again...')
+                time.sleep(REQUEST_DISTANCE)
+                continue
             addUpcomingNames(json_data, False, scraper_count)
         i = i + 1
             
