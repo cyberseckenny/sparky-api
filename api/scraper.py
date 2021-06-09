@@ -8,6 +8,7 @@ import time
 from datetime import datetime
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import HardwareType, Popularity, SoftwareName, OperatingSystem, SoftwareType
+from bson import json_util
 
 SCRAPER = cloudscraper.create_scraper() 
 SCRAPER_COUNT = 0
@@ -52,7 +53,7 @@ def get_new_headers(url):
         now = datetime.now()
         SCRAPER_USER_AGENT = USER_AGENT_ROTATOR.get_random_user_agent() 
         headers = {'User-Agent': SCRAPER_USER_AGENT}
-        SCRAPER = cloudscraper.create_scraper(debug=True)
+        SCRAPER = cloudscraper.create_scraper()
         response = SCRAPER.get(url, stream=True, headers=headers)
         if (response.headers['Connection'] == 'close'):
             print('Session creation failed. Trying again momentarily... ' + str(now))
@@ -116,14 +117,21 @@ def scrape_name_mc():
 
         return [json.dumps(json_data_array), scraper_count]
 
+    # checks if json data is correct
+    def check_json_validity(json_data):
+        data = json_util.loads(json_data)
+        if len(data) != 50:
+            print('Scraper returned an invalid list, trying to scrape again...')
+            time.sleep(REQUEST_DISTANCE)
+            return False 
+        return True 
+
     i = 0
     while True:
         if i == 0:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names?sort=asc&length_op=eq&length=3&lang=&searches=0')
             # json data was empty so we just try to scrape again
-            if json_data == []:
-                print('Scraper returned an empty list, trying to scrape again...')
-                time.sleep(REQUEST_DISTANCE)
+            if not check_json_validity(json_data):
                 continue 
             addUpcomingNames(json_data, True, scraper_count)
         elif i == 10: # when to check for 3 letter names again 
@@ -132,9 +140,7 @@ def scrape_name_mc():
         else:
             json_data, scraper_count = scrape('https://namemc.com/minecraft-names')
             # json data was empty so we just try to scrape again
-            if json_data == []:
-                print('Scraper returned an empty list, trying to scrape again...')
-                time.sleep(REQUEST_DISTANCE)
+            if not check_json_validity(json_data):
                 continue
             addUpcomingNames(json_data, False, scraper_count)
         i = i + 1
