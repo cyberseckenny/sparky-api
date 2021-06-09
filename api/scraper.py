@@ -45,6 +45,7 @@ def get_new_headers(url):
     while True:
         now = datetime.now()
         headers = {'User-Agent': SCRAPER_USER_AGENT}
+        SCRAPER = cloudscraper.create_scraper()
         response = SCRAPER.get(url, stream=True, headers=headers)
         time.sleep(REQUEST_DISTANCE)
         if (response.headers['Connection'] == 'close'):
@@ -52,7 +53,7 @@ def get_new_headers(url):
         else:
             print('Succesfully created new session.')
             break
-        scaling_request_distance = scaling_request_distance * 1.5
+        scaling_request_distance = scaling_request_distance * 1.2
         time.sleep(scaling_request_distance)
 
     SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
