@@ -12,7 +12,6 @@ SCRAPER_COUNT = 0
 SCRAPER_HEADERS = {}
 SCRAPER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 REQUEST_DISTANCE = 3
-REQUESTS_BEFORE_NEW_SESSION_ID = 200 
 
 # cloud scraper used here to scrape the page
 def get_request(url):
@@ -20,41 +19,51 @@ def get_request(url):
     global SCRAPER_COUNT
     global SCRAPER_HEADERS
 
-    if SCRAPER_COUNT == REQUESTS_BEFORE_NEW_SESSION_ID:
-        SCRAPER = cloudscraper.create_scraper()
-        SCRAPER_COUNT = 0
-     
-    response = None
-    if SCRAPER_COUNT == 0:
-        headers = {'User-Agent': SCRAPER_USER_AGENT}
-        response = SCRAPER.get(url, stream=True, headers=headers)
+    if SCRAPER_HEADERS is None:
+        get_new_headers(url)
+
+    # if cloudflare denies our request, we keep on trying for a new session id until they don't
+    while True:
+        response = SCRAPER.get(url, headers=SCRAPER_HEADERS)
         time.sleep(REQUEST_DISTANCE)
-
-        # we don't continue until cloudflare lets us through
-        while True:
-            now = datetime.now()
-            if (response.headers['Connection'] == 'close'):
-                print('New session creation failed. Trying again momentarily... ' + str(now))
-            else:
-                print('Succesfully created new session.')
-                break
-            time.sleep(REQUEST_DISTANCE)
-            SCRAPER = cloudscraper.create_scraper()
-            response = SCRAPER.get(url, stream=True, headers=headers)
-
-        SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
-                           'Referer': 'https://namemc.com',
-                           'Alt-Used': 'namemc.com',
-                           'Connection': 'keep-alive',
-                           'Upgrade-Insecure-Requests': '1',
-                           'Sec-GPC': '1',
-                           'TE': 'Trailers'}
-        
-    response = SCRAPER.get(url, stream=True, headers=SCRAPER_HEADERS)
+        if response.headers['Connection'] == 'close':
+            get_new_headers(url)
+        else:
+            break
 
     SCRAPER_COUNT = SCRAPER_COUNT + 1
     return [parse(response.text), SCRAPER_COUNT]
 
+def get_new_headers(url):
+    global SCRAPER
+    global SCRAPER_COUNT
+    global SCRAPER_HEADERS
+    # we will keep increasing this, giving cloudflare more time to let us in
+    scaling_request_distance = REQUEST_DISTANCE
+
+    # we don't stop trying for new headers until cloudflare lets us through
+    while True:
+        now = datetime.now()
+        headers = {'User-Agent': SCRAPER_USER_AGENT}
+        response = SCRAPER.get(url, stream=True, headers=headers)
+        time.sleep(REQUEST_DISTANCE)
+        if (response.headers['Connection'] == 'close'):
+            print('New session creation failed. Trying again momentarily... ' + str(now))
+        else:
+            print('Succesfully created new session.')
+            break
+        scaling_request_distance = scaling_request_distance * 1.5
+        time.sleep(scaling_request_distance)
+
+    SCRAPER_HEADERS = {'User-Agent': SCRAPER_USER_AGENT,
+                       'Referer': 'https://namemc.com',
+                       'Alt-Used': 'namemc.com',
+                       'Connection': 'keep-alive',
+                       'Upgrade-Insecure-Requests': '1',
+                       'Sec-GPC': '1',
+                       'TE': 'Trailers'}
+
+    SCRAPER_COUNT = 0
  
 # returns the soup (beautifulsoup) of an html response
 def parse(html):
