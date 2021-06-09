@@ -7,14 +7,19 @@ import cloudscraper
 import time
 from datetime import datetime
 from random_user_agent.user_agent import UserAgent
-from random_user_agent.params import SoftwareName, OperatingSystem
+from random_user_agent.params import HardwareType, Popularity, SoftwareName, OperatingSystem, SoftwareType
 
 SCRAPER = cloudscraper.create_scraper() 
 SCRAPER_COUNT = 0
 SCRAPER_HEADERS = {}
 SCRAPER_USER_AGENT = None
 
-USER_AGENT_ROTATOR = UserAgent()
+software_names = [SoftwareName.CHROME.value, SoftwareName.CHROMIUM.value, SoftwareName.FIREFOX.value, SoftwareName.ANDROID.value]
+operating_systems = [OperatingSystem.LINUX.value, OperatingSystem.WINDOWS.value, OperatingSystem.MAC.value]
+popularity = [Popularity.POPULAR.value]
+hardware_types = [HardwareType.MOBILE.value, HardwareType.COMPUTER.value]
+software_types = [SoftwareType.WEB_BROWSER.value]
+USER_AGENT_ROTATOR = UserAgent(software_names=software_names, operating_systems=operating_systems, hardware_types=hardware_types, popularity=popularity, software_types=software_types)
 
 REQUEST_DISTANCE = 3
 
