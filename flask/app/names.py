@@ -1,9 +1,7 @@
 from app import app # type: ignore
 
 import configparser
-from datetime import datetime
 
-from bson import json_util
 from flask import jsonify, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -34,26 +32,6 @@ db = mongo_client.upcoming_names
 UPCOMING = db.upcoming
 UPCOMING_THREE = db.upcoming_three
 
-# the 'three' boolean indicates if the json_data is three letter names
-
-
-def addUpcomingNames(json_data: str, three: bool):
-    data = json_util.loads(json_data)
-    now = datetime.now()
-    if three:
-        UPCOMING_THREE.drop()
-        UPCOMING_THREE.insert_many(data)
-        print(
-            'Updated upcoming three letter names at ' + str(now))
-    else:
-        UPCOMING.drop()
-        UPCOMING.insert_many(data)
-        print(
-            'Updated upcoming names at ' + str(now))
-
-# the 'three' boolean indicates if the json_data is three letter names
-
-
 def getUpcomingNames(three: bool) -> list[str]:
     cursor: Cursor = UPCOMING.find({}, {'_id': False})
     if three:
@@ -67,7 +45,7 @@ def getUpcomingNames(three: bool) -> list[str]:
 
 
 limiter: Limiter = Limiter(
-    app,
+    app, # type: ignore
     key_func=get_remote_address,
     default_limits=[MAX_REQUESTS_PER_MINUTE + " per minute"]
 )
