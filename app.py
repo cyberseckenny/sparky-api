@@ -6,8 +6,10 @@ from flask import Flask, jsonify, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
+from pymongo.cursor import Cursor
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -33,7 +35,7 @@ UPCOMING_THREE = db.upcoming_three
 # the 'three' boolean indicates if the json_data is three letter names
 
 
-def addUpcomingNames(json_data: dict[], three: bool, i: int):
+def addUpcomingNames(json_data: list[str], three: bool, i: int):
     data = json_util.loads(json_data)
     now = datetime.now()
     if three:
@@ -49,21 +51,20 @@ def addUpcomingNames(json_data: dict[], three: bool, i: int):
 # the 'three' boolean indicates if the json_data is three letter names
 
 
-def getUpcomingNames(three):
+def getUpcomingNames(three: bool) -> list[str]:
+    cursor: Cursor = UPCOMING.find({}, {'_id': False})
     if three:
         cursor = UPCOMING_THREE.find({}, {'_id': False})
-    else:
-        cursor = UPCOMING.find({}, {'_id': False})
 
-    json_data = []
-    for doc in cursor:
-        json_data.append(doc)
+    json_data: list[str] = list()
+    for doc in cursor:  # type: ignore
+        json_data.append(doc)  # type: ignore
 
     return json_data
 
 
 app = Flask(__name__)
-limiter = Limiter(
+limiter: Limiter = Limiter(
     app,
     key_func=get_remote_address,
     default_limits=[MAX_REQUESTS_PER_MINUTE + " per minute"]
@@ -71,19 +72,19 @@ limiter = Limiter(
 
 
 @app.errorhandler(429)
-def rate_limit(e:):
+def rate_limit(e):  # type ignore
     return 'You are being rate limited.'
 
 # acts a 'missing handler', or a fallback route if none of the others work
 
 
 @app.route('/<path:path>')
-def page_not_found(path):
+def page_not_found(path):  # type: ignore
     return render_template('page_not_found.html')
 
 
 @app.errorhandler(500)
-def internal_server_error(e):
+def internal_server_error(e):  # type: ignore
     return 'INTERNAL_SERVER_ERROR'
 
 
@@ -112,5 +113,6 @@ def endpoint_droptime(name: str):
     if name == ' ':
         return jsonify({"error": "INVALID_NAME"})
     else:
+        return ''
         # TODO: fix me
         # return jsonify(json_data)
