@@ -57,7 +57,7 @@ def getUpcomingNames(three: bool) -> list[str]:
         cursor = UPCOMING_THREE.find({}, {'_id': False})
 
     json_data: list[str] = list()
-    for doc in cursor:  # type: ignore
+    for doc in cursor:
         json_data.append(doc)  # type: ignore
 
     return json_data
@@ -79,12 +79,12 @@ def rate_limit(e):  # type ignore
 
 
 @app.route('/<path:path>')
-def page_not_found(path):  # type: ignore
+def page_not_found(path):
     return render_template('page_not_found.html')
 
 
 @app.errorhandler(500)
-def internal_server_error(e):  # type: ignore
+def internal_server_error(e):
     return 'INTERNAL_SERVER_ERROR'
 
 
