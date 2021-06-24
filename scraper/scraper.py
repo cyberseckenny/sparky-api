@@ -7,7 +7,33 @@ from bs4 import BeautifulSoup
 from bson import json_util
 import undetected_chromedriver as uc
 
-from app import addUpcomingNames
+import configparser
+from pymongo import MongoClient
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+mongoSection = config['MONGO']
+MONGO_IP = mongoSection['IP']
+
+mongo_client = MongoClient('mongodb://' + MONGO_IP + ':27017')
+db = mongo_client.upcoming_names
+UPCOMING = db.upcoming
+UPCOMING_THREE = db.upcoming_three
+
+# adds names to Mongo
+
+
+def addUpcomingNames(json_data: str, three: bool):
+    data = json_util.loads(json_data)
+    now = datetime.now()
+    if three:
+        UPCOMING_THREE.insert_many(data)
+        print(
+            'Updated upcoming three letter names at ' + str(now))
+    else:
+        UPCOMING.insert_many(data)
+        print(
+            'Updated upcoming names at ' + str(now))
 
 # web driver scrapes page and returns text
 
