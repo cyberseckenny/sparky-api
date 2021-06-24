@@ -15,7 +15,9 @@ from app import addUpcomingNames
 def get_request(url: str):
     driver = uc.Chrome()
     with driver:
-        return parse(driver.get(url).text)  # type: ignore
+        driver.get(url)
+        parsed_text = parse(driver.page_source)
+        return parsed_text
 
 # returns the soup (beautifulsoup) of an html response
 
