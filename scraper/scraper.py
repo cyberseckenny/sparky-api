@@ -39,7 +39,16 @@ def addUpcomingNames(json_data: str, three: bool):
 
 
 def get_request(url: str):
-    driver = uc.Chrome()
+    chrome_options = uc.ChromeOptions()
+
+    chrome_options.add_argument('--headless')
+    prefs = {'profile.managed_default_content_settings.images': 2,
+             'profile.managed_default_content_settings.javascript': 2,
+             'profile.managed_default_content_settings.stylesheet': 2,
+             'profile.managed_default_content_settings.css': 2}
+    chrome_options.add_experimental_option('prefs', prefs)
+    driver = uc.Chrome(chrome_options=chrome_options)
+
     with driver:
         driver.get(url)
         parsed_text = parse(driver.page_source)
