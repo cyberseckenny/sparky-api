@@ -5,6 +5,9 @@
 
   "pythonVersion": "3.9",
   "reportUntypedFunctionDecorator": "warning",
-  "reportUnknownMemberType": "warning",
-  "reportMissingTypeStubs": "false"
+  "reportUnknownMemberType": "none",
+  "reportMissingTypeStubs": false,
+  "reportMissingModuleSource": "none",
+  "reportUnknownParameterType": "warning",
+  "reportUnknownVariableType": "warning"
 }
