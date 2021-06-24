@@ -5,7 +5,7 @@ import re
 
 from bs4 import BeautifulSoup
 from bson import json_util
-import undetected_chromedriver.v2 as uc
+import undetected_chromedriver as uc
 
 from app import addUpcomingNames
 
