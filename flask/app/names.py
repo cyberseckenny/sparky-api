@@ -1,8 +1,10 @@
+from app import app # type: ignore
+
 import configparser
 from datetime import datetime
 
 from bson import json_util
-from flask import Flask, jsonify, render_template, request
+from flask import jsonify, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
@@ -64,7 +66,6 @@ def getUpcomingNames(three: bool) -> list[str]:
     return json_data
 
 
-app = Flask(__name__)
 limiter: Limiter = Limiter(
     app,
     key_func=get_remote_address,

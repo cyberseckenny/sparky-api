@@ -1,6 +1,6 @@
 {
   "include": [
-    "src"
+    "flask"
   ],
 
   "pythonVersion": "3.9",
