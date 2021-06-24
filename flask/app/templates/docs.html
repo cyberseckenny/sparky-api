@@ -32,7 +32,7 @@
   <hr>
   </hr>
   <pre>GET https://names.sparky.rip/upcoming?three_letter=&lttrue/false&gt</pre>
-  <p>Returns the <code>50</code> next upcoming names. Each <code>name</code> will be returned along with it's <code>searches</code> (pulled from NameMC), it's <code>unixDropTime</code>, and it's <code>utcDropTime</code>.</p>
+  <p>Returns the next <code>50</code> upcoming names. Each <code>name</code> will be returned along with it's <code>searches</code> (pulled from NameMC), it's <code>unixDropTime</code>, and it's <code>utcDropTime</code>.</p>
   <p>If <code>three_letter</code> is set to <code>true</code> only three letter names will be returned.</p>
   <h3>Response</h3>
   <pre>[
@@ -60,7 +60,7 @@
   <hr>
   </hr>
   <pre>GET https://names.sparky.rip/droptime/&ltname&gt</pre>
-  <p>Returns the droptime of a specified name. Included with the specified <code>name</code> will be <code>unixDropTime</code> and <code>utcDropTime</code>.</p>
+  <p>Returns the droptime of a specified name. Included with <code>name</code> will be <code>unixDropTime</code> and <code>utcDropTime</code>. <b>Only names that are above <code>3 searches</code> and are dropping in the next <code>24 hours</code> can be returned.</b> </p>
   <h3>Response</h3>
   <pre>{
     "name": "657",
