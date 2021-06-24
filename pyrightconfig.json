@@ -1,0 +1,10 @@
+{
+  "include": [
+    "src"
+  ],
+
+  "pythonVersion": "3.9",
+  "reportUntypedFunctionDecorator": "warning",
+  "reportUnknownMemberType": "warning",
+  "reportMissingTypeStubs": "false"
+}
