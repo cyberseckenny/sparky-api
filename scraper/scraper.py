@@ -27,10 +27,12 @@ def addUpcomingNames(json_data: str, three: bool):
     data = json_util.loads(json_data)
     now = datetime.now()
     if three:
+        UPCOMING_THREE.drop()
         UPCOMING_THREE.insert_many(data)
         print(
             'Updated upcoming three letter names at ' + str(now))
     else:
+        UPCOMING.drop()
         UPCOMING.insert_many(data)
         print(
             'Updated upcoming names at ' + str(now))
@@ -66,6 +68,7 @@ def scrape_name_mc():
         soup = get_request(url)
         name_containers: list[str] = soup.find_all(
             'div', class_=re.compile('^row no-gutters py-1 px-3'))
+
         json_data_array = []
         for name in name_containers:
             player_name: str = name.find('a').text
@@ -78,8 +81,8 @@ def scrape_name_mc():
 
             if not searches.isnumeric():
                 real_searches = 0
-
-            real_searches: int = int(searches)
+            else:
+                real_searches = int(searches)
 
             json_data = {"name": player_name, "searches": real_searches,
                          "unixDropTime": unix_drop_time, "utcDropTime": utc_drop_time}
