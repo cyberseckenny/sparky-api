@@ -2,25 +2,31 @@ from datetime import datetime, timezone
 from datetime import datetime
 import json
 import re
+from stem import Signal
+from stem.control import Controller
 
 from bs4 import BeautifulSoup
 from bson import json_util
-import undetected_chromedriver as uc
+import requests
 
 import configparser
 from pymongo import MongoClient
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-mongoSection = config['MONGO']
-MONGO_IP = mongoSection['IP']
+
+mongo_section = config['MONGO']
+MONGO_IP = mongo_section['IP']
+
+scraper_section = config['SCRAPER']
+FLARE_SOLVER_IP = scraper_section['FLARE_SOLVER_IP']
+TOR_IP = scraper_section['TOR_IP']
 
 mongo_client = MongoClient('mongodb://' + MONGO_IP + ':27017')
 db = mongo_client.upcoming_names
 UPCOMING = db.upcoming
 UPCOMING_THREE = db.upcoming_three
 
-proxy = '127.0.0.1:9050'
 
 # adds names to Mongo
 
@@ -43,25 +49,21 @@ def addUpcomingNames(json_data: str, three: bool):
 
 
 def get_request(url: str):
-    chrome_options = uc.ChromeOptions()
+    payload = {    
+        "cmd": "request.get",
+        "url":"http://www.google.com/",
+        "maxTimeout": 60000,
+    }
 
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument(f'--proxy-server={proxy}')
-    prefs = {'profile.managed_default_content_settings.images': 2,
-             'profile.managed_default_content_settings.javascript': 2,
-             'profile.managed_default_content_settings.stylesheet': 2,
-             'profile.managed_default_content_settings.css': 2}
-    chrome_options.add_experimental_option('prefs', prefs)
-    driver = uc.Chrome(chrome_options=chrome_options)
+    r = requests.get(FLARE_SOLVER_IP, params=payload)    
 
-    with driver:
-        try:
-            driver.get(url)
-        except: # just gonna assume this is a proxy error
-            print("Could not connect to TOR proxy. Make sure it's running!") 
-            exit()
-        parsed_text = parse(driver.page_source)
-        return parsed_text
+    # renew TOR ip
+    with Controller.from_port(port = 9051) as controller:
+        controller.authenticate(password="QNZX0193")
+        controller.signal(Signal.NEWNYM) # type: ignore
+
+    return parse(r.text)
+
 
 # returns the soup (beautifulsoup) of an html response
 
