@@ -20,6 +20,8 @@ db = mongo_client.upcoming_names
 UPCOMING = db.upcoming
 UPCOMING_THREE = db.upcoming_three
 
+proxy = '127.0.0.1:9050'
+
 # adds names to Mongo
 
 
@@ -44,6 +46,7 @@ def get_request(url: str):
     chrome_options = uc.ChromeOptions()
 
     chrome_options.add_argument('--headless')
+    chrome_options.add_argument(f'--proxy-server={proxy}')
     prefs = {'profile.managed_default_content_settings.images': 2,
              'profile.managed_default_content_settings.javascript': 2,
              'profile.managed_default_content_settings.stylesheet': 2,
@@ -52,7 +55,11 @@ def get_request(url: str):
     driver = uc.Chrome(chrome_options=chrome_options)
 
     with driver:
-        driver.get(url)
+        try:
+            driver.get(url)
+        except: # just gonna assume this is a proxy error
+            print("Could not connect to TOR proxy. Make sure it's running!") 
+            exit()
         parsed_text = parse(driver.page_source)
         return parsed_text
 
